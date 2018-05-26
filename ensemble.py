@@ -529,7 +529,3 @@ images_dir = os.path.join(dataset_dir, 'JPEGImages/')
 cache_dir = './'
 
 cross_validate_ensemble_parameters(ens, map_computation)
-
-# unique 3 detectors mAP = 0.85474512630586064 not best parameters (parameters for 2 detectors were used) SAME_LABELS_ONLY=False
-
-# unique 3 detectors mAP = 0.85464642388164747 not best parameters (parameters for 2 detectors were used) SAME_LABELS_ONLY=True
