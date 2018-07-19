@@ -1,27 +1,7 @@
 # (c) Evgeny Razinkov, Kazan Federal University, 2017
-import os
-import pickle
-import datetime
 
 import numpy as np
-# import tensorflow as tf
-#import matplotlib.pyplot as plt
-#import objekt
 
-
-ADD_FAKE_LOGITS = False
-
-# ENSEMBLE_BOUNDING_BOX = 'MAX'
-# ENSEMBLE_BOUNDING_BOX = 'MIN'
-# ENSEMBLE_BOUNDING_BOX = 'AVERAGE'
-# ENSEMBLE_BOUNDING_BOX = 'WEIGHTED_AVERAGE'
-# ENSEMBLE_SCORES = 'MULTIPLY'
-# ENSEMBLE_SCORES = 'AVERAGE'
-# ADD_EMPTY_DETECTIONS = False
-# ADD_EMPTY_DETECTIONS = True
-
-MAX_1_BOX_PER_DETECTOR = True
-USE_BC = True
 
 def iou_box_area(box):
     return (box[2] - box[0])*(box[3] - box[1])
@@ -44,26 +24,21 @@ def get_iou(box1, box2):
     union = iou_box_area(box1) + iou_box_area(box2) - intersection
     return intersection/union
 
+
 def BC(distribution1, distribution2):
     bc = 0.0
     for i in range(0, len(distribution1)):
         bc += np.sqrt(distribution1[i] * distribution2[i])
     return bc 
 
-def cut_no_object_array(class_scores):
+
+def cut_no_object_score(class_scores):
     without_no_object = class_scores[:, 1:]
     class_scores_sum = np.sum(without_no_object, axis = 1)
     class_scores_sum = class_scores_sum + np.equal(class_scores_sum, 0.0).astype(float)
     new_class_scores = (without_no_object.T / class_scores_sum).T
     return new_class_scores
 
-def cut_no_object(class_scores_item):
-    without_no_object = class_scores[1:]
-    class_scores_sum = np.sum(without_no_object)
-    if class_scores_sum == 0:
-        class_scores_sum = 1
-    new_class_scores = without_no_object/class_scores_sum
-    return new_class_scores
 
 def fastIoU(boxes):
     number_of_boxes = len(boxes)
@@ -79,12 +54,14 @@ def fastIoU(boxes):
     iou = m_intersection / (m_area + m_T_area - m_intersection)
     return iou
 
+
 def fastSame(detector_indices):
     number_of_boxes = len(detector_indices)
     s0 = np.zeros((number_of_boxes, number_of_boxes))
     s0[:] = detector_indices
     s_diff = np.not_equal(s0 - s0.T, 0.0).astype(float)
-    return s_diff #+ np.eye(number_of_boxes)
+    return s_diff
+
 
 def fastLabels(only_object_scores):
     number_of_boxes = len(only_object_scores)
@@ -93,6 +70,7 @@ def fastLabels(only_object_scores):
     L0[:] = labels
     l_same = np.equal(L0 - L0.T, 0.0).astype(float)
     return l_same
+
 
 def fastBC(only_object_scores):
     number_of_boxes = len(only_object_scores)
@@ -107,117 +85,108 @@ def fastBC(only_object_scores):
 
 
 class BoxClustering:
-    def __init__(self, bounding_boxes, class_scores, hard_threshold=0.5, power_iou=0.5, same_labels_only=True, silent=True):
-        self.same_labels_only = same_labels_only
+    def __init__(self, bounding_boxes, class_scores, hard_threshold=0.5, power_iou=0.5, same_labels_only=True,
+                 use_BC=True, max_1_box_per_detector=True):
+        """
+        Constructor for class responsible for detections clustering.
+
+        Parameters
+        ----------
+        bounding_boxes : dict
+            Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
+
+            Example: {
+            'ssd': [[10, 28, 128, 250],
+                    ...
+                    [55, 120, 506, 709]],
+            ...
+            'denet': [[55, 169, 350, 790],
+                      ...
+                      [20, 19, 890, 620]],
+            }
+
+        class_scores : dict
+            Dictionary, where keys are detector's names and values are numpy arrays of detector's class scores vectors,
+            corresponding to bounding boxes.
+
+            Example: {
+            'ssd': [[0.8, 0.004, ..., 0.000009],
+                    ...
+                    [0.0, 0.9, ..., 0.0001]],
+            ...
+            'denet': [[0.4, 0.4, ..., 0.1],
+                      ...
+                      [0.000001, 0.0000005, ..., 0.9]],
+            }
+
+        hard_threshold : float
+            Parameter τ in the paper, between [0.0, 1.0]
+
+        power_iou : float
+            Parameter γ in the paper, between [0.0, 1.0]
+
+        same_labels_only : boolean
+            True - only detections with same class label will be added into same cluster,
+            False - detections labels won't be taken into account while clustering
+
+        use_BC : boolean
+            True - Bhattacharyya and Jaccard coefficient will be used to compute detections similarity score
+            False - only Jaccard coefficient will be used to compute detections similarity score
+
+        max_1_box_per_detector : boolean
+            True - only one detection form detector could be added to cluster
+            False - multiple detections from same detector could be added to cluster
+
+        """
+        self.hard_threshold = hard_threshold
         self.power_iou = power_iou
+        self.same_labels_only = same_labels_only
+        self.use_BC = use_BC
+        self.max_1_box_per_detector = max_1_box_per_detector
+
         self.detector_names = bounding_boxes.keys()
         number_of_classes = 1
         if len(self.detector_names) > 0:
             number_of_classes = len(class_scores[self.detector_names[0]][0])
-        #number_of_boxes = 0
-        #for boxes in bounding_boxes.values():
-        #    number_of_boxes += len(boxes)
 
         self.n_boxes = 0
         self.bounding_boxes = bounding_boxes
-        #self.boxes = []
         self.boxes = np.zeros((0, 4))
-        #self.names = []
         self.names = np.zeros(0)
-        #self.class_scores = []
         self.class_scores = np.zeros((0, number_of_classes))
-        #self.only_object_scores = []
         self.only_object_scores = np.zeros((0, number_of_classes - 1))
-        
-        self.hard_threshold = hard_threshold
+
         detector_index = 0
         self.actual_names = []
         for detector_name in self.detector_names:
-
             detector_boxes = len(bounding_boxes[detector_name])
             if detector_boxes > 0:
                 self.n_boxes += detector_boxes
-                #self.boxes += bounding_boxes[detector_name]
-                #print(self.boxes.shape, bounding_boxes[detector_name].shape)
                 self.boxes = np.vstack((self.boxes, bounding_boxes[detector_name]))
-                #self.names +=  [detector_index] * len(bounding_boxes[detector_name])
                 self.actual_names += [detector_name] * detector_boxes
                 self.names = np.hstack((self.names, np.ones(detector_boxes) * detector_index ))
-                #self.class_scores += class_scores[detector_name]
                 self.class_scores = np.vstack((self.class_scores, class_scores[detector_name]))
-
-                #self.only_object_scores += cut_no_object_array(class_scores[detector_name])
-                #self.only_object_scores = np.vstack((self.only_object_scores, cut_no_object_array(class_scores[detector_name])))
             detector_index += 1
-        self.only_object_scores = cut_no_object_array(self.class_scores)
-        self.silent = silent
-        self.status(self.boxes)
-        self.status(self.class_scores)
-        self.status(self.names)
-        
+        self.only_object_scores = cut_no_object_score(self.class_scores)
 
-
-
-    def status(self, message):
-        if not self.silent:
-            print(message)
-
-    def prepare_matrix_(self):
-        self.status('Preparing matrices...')
-        self.iou_matrix = np.zeros((self.n_boxes, self.n_boxes))
-
-        self.path_matrix = np.zeros((self.n_boxes, self.n_boxes)).astype(int)
-        self.bc_matrix = np.zeros((self.n_boxes, self.n_boxes))
-
-        for b1 in range(0, self.n_boxes):
-            self.status(self.boxes[b1])
-            self.path_matrix[b1, b1] = 1
-            self.iou_matrix[b1, b1] = 1.0
-            for b2 in range(0, b1):
-                self.status(self.boxes[b2])
-                if MAX_1_BOX_PER_DETECTOR and (self.names[b1] == self.names[b2]):
-                    iou = 0.0
-                elif self.same_labels_only and (np.argmax(self.class_scores[b1][1:])!=np.argmax(self.class_scores[b2][1:])):
-                    iou = 0.0
-                else:
-                    iou = get_iou(self.boxes[b1], self.boxes[b2])
-                self.status('IoU: ' + str(iou))
-                self.iou_matrix[b1, b2] = iou
-                self.iou_matrix[b2, b1] = iou
-                #bc = BC()
-
-                #self.bc_matrix[b1, b2] = 
-                if iou > self.hard_threshold:
-                    self.path_matrix[b1, b2] = 1
-                    self.path_matrix[b2, b1] = 1
-        self.status('Matrix:')
-        self.status(self.path_matrix)
-        self.status(self.iou_matrix)
-        self.status('Matrices ready')
 
     def prepare_matrix(self):
-        self.iou_matrix = fastIoU(self.boxes)
-        # for i in range(len(self.iou_matrix)):
-            # if self.iou_matrix[i, i] < 1:
-            #     print(self.iou_matrix[i, i])
-            #     print(self.boxes[i])
-            #     print(self.actual_names[i])
-        if MAX_1_BOX_PER_DETECTOR:
+        self.sim_matrix = fastIoU(self.boxes)
+
+        if self.max_1_box_per_detector:
             s_diff = fastSame(self.names)
-            self.iou_matrix = self.iou_matrix * (s_diff + np.eye(self.n_boxes))
+            self.sim_matrix = self.sim_matrix * (s_diff + np.eye(self.n_boxes))
         if self.same_labels_only:
             l_same = fastLabels(self.only_object_scores)
-            self.iou_matrix *= l_same
-        if USE_BC:
+            self.sim_matrix *= l_same
+        if self.use_BC:
             bc = fastBC(self.only_object_scores)
-            self.iou_matrix = np.power(self.iou_matrix, self.power_iou)* np.power(bc, 1.0 - self.power_iou)
+            self.sim_matrix = np.power(self.sim_matrix, self.power_iou) * np.power(bc, 1.0 - self.power_iou)
         
-        self.path_matrix = np.greater_equal(self.iou_matrix, self.hard_threshold).astype(int)
-        self.status(self.iou_matrix)
-        self.status(self.path_matrix)
+        self.path_matrix = np.greater_equal(self.sim_matrix, self.hard_threshold).astype(int)
+
 
     def get_paths(self):
-        self.status('Getting paths...')
         self.whole_path_matrix = self.path_matrix
         new_paths_might_exist = True
         while new_paths_might_exist:
@@ -226,183 +195,105 @@ class BoxClustering:
             if np.array_equal(self.whole_path_matrix, self.new_whole_path_matrix):
                 new_paths_might_exist = False
             self.whole_path_matrix = self.new_whole_path_matrix
-        self.status('All paths:')
-        self.status(self.whole_path_matrix)
-        self.status('All paths are ready')
+
 
     def cluster_indices(self, indices):
-        #clusters = [np.array([a]) for a in indices]
         clusters = [[a] for a in indices]
         if len(clusters) == 1:
             return clusters
-        ci1, ci2, iou = self.find_clusters_to_merge(clusters)
-        while iou > self.hard_threshold:
-            self.status('IoU of merging clusters: ' + str(iou))
+        ci1, ci2, sim = self.find_clusters_to_merge(clusters)
+        while sim > self.hard_threshold:
             clusters = self.merge_clusters(ci1, ci2, clusters)
             if len(clusters) == 1:
                 return clusters
             else:
-                ci1, ci2, iou = self.find_clusters_to_merge(clusters)
+                ci1, ci2, sim = self.find_clusters_to_merge(clusters)
         return clusters
 
         
     def find_clusters_to_merge(self, clusters):
-        max_cluster_iou = 0.0
+        max_cluster_sim = 0.0
         ci1 = None
         ci2 = None
         if len(clusters) < 2:
             return 0, 0, 1.0
         for i in range(1, len(clusters)):
             for j in range(0, i):
-                cl_iou = self.cluster_distance(clusters[i], clusters[j])
-                if max_cluster_iou < cl_iou:
+                cl_sim = self.cluster_distance(clusters[i], clusters[j])
+                if max_cluster_sim < cl_sim:
                     ci1 = i
                     ci2 = j
-                    max_cluster_iou = cl_iou
-        return ci1, ci2, max_cluster_iou
+                    max_cluster_sim = cl_sim
+        return ci1, ci2, max_cluster_sim
+
 
     def merge_clusters(self, ci1, ci2, clusters):
         if ci1 == ci2:
             return clusters
-        #clusters[ci1] = np.hstack((clusters[ci1], clusters[ci2]))
         clusters[ci1] = clusters[ci1] + clusters[ci2]
         del clusters[ci2]
         return clusters
-    
+
+
     def cluster_distance(self, c1, c2):
-        #return np.min(self.iou_matrix[c1, c2])
-        min_iou_init = False
-        min_iou = 0.0
-
-
+        min_sim_init = False
+        min_sim = 0.0
         for x1 in c1:
             for x2 in c2:
-                if not min_iou_init:
-                    min_iou = self.iou_matrix[x1, x2]
-                    min_iou_init = True
+                if not min_sim_init:
+                    min_sim = self.sim_matrix[x1, x2]
+                    min_sim_init = True
                 else:
-                    if min_iou > self.iou_matrix[x1, x2]:
-                        min_iou = self.iou_matrix[x1, x2]
-        return min_iou
+                    if min_sim > self.sim_matrix[x1, x2]:
+                        min_sim = self.sim_matrix[x1, x2]
+        return min_sim
 
 
     def get_raw_candidate_objects(self):
+        """
+        Clusters detections from different detectors.
 
+        Returns
+        -------
+        objects_boxes : list
+            List containing [clusters, cluster bounding boxes, box coordinates]
+            cluster bounding boxes - bounding boxes added to cluster
+
+        objects_detectors_names : list
+            List containing [clusters, cluster detectors names]
+            cluster detectors names - names of detectors, corresponding to bounding boxes added to cluster
+
+        objects_class_scores : list
+            List containing [clusters, cluster class scores]
+            cluster class scores - class scores, corresponding to bounding boxes added to cluster
+
+        """
         self.prepare_matrix()
-        # for i in range(len(self.path_matrix)):
-        #     if np.sum(self.path_matrix[i]) == 0:
-        #         print('ppc0')
 
         self.get_paths()
-        # for i in range(len(self.whole_path_matrix)):
-        #     if np.sum(self.whole_path_matrix[i]) == 0:
-        #         print('ppc')
+
         objects_boxes = []
-        objects_detectors = []
-        objects_logits = []
-        objects_I = []
+        objects_detectors_names = []
+        objects_class_scores = []
         result_boxes = []
         np_boxes = np.array(self.boxes)
         np_detectors = np.array(self.actual_names)
-        np_logits = np.array(self.class_scores)
+        np_class_scores = np.array(self.class_scores)
         if len(self.whole_path_matrix):
             unique_whole_path_matrix = np.vstack({tuple(row) for row in self.whole_path_matrix})
             for i in range(0, len(unique_whole_path_matrix)):
                 indices, = np.where(unique_whole_path_matrix[i] > 0)
-                self.status('Number of bounding boxes to cluster: ' + str(len(indices)))
                 if len(indices) > 0:
                     clusters = self.cluster_indices(list(indices))
-                    self.status('Clusters created: ' + str(len(clusters)))
                     for c in clusters:
                         boxes_0 = np_boxes[c]
                         objects_boxes.append(boxes_0)
                         result_boxes.append(np.average(boxes_0, axis = 0))
                         detectors_0 = list(np_detectors[c])
+                        class_scores_0 = list(np_class_scores[c])
+                        objects_class_scores.append(class_scores_0)
+                        objects_detectors_names.append(detectors_0)
 
-
-                        logits_0 = list(np_logits[c])
-
-
-                        objects_logits.append(logits_0)
-                        objects_detectors.append(detectors_0)
-
-        return objects_boxes, objects_detectors, objects_logits
-        
-    def process_candidate_objects(self, objects_boxes, objects_detectors, objects_logits):
-        result_boxes = []
-        objects_I = []
-        for i in range(0, len(objects_boxes)):
-            boxes_0 = objects_boxes[i]
-            logits_0 = objects_logits[i]
-            detectors_0 = objects_detectors[i]
-            result_boxes.append(np.average(boxes_0, axis = 0))
-            I_0 = [1] * len(boxes_0)
-            if ADD_FAKE_LOGITS:
-                for detector_name in self.detector_names:
-                    if detector_name not in detectors_0:
-                        logits_0.append(np.zeros_like(self.class_scores[0]))
-                        detectors_0.append(detector_name)
-                        I_0.append(0)
-            objects_I.append(I_0)    
-        return objects_boxes, objects_detectors, objects_logits, objects_I, result_boxes
-
-    def get_candidate_objects(self):
-        objects_boxes, objects_detectors, objects_logits = self.get_raw_candidate_objects()
-        return self.process_candidate_objects(objects_boxes, objects_detectors, objects_logits)
-
-
-
-
-
-
-if __name__ == '__main__':
-
-
-    bboxes_ssd = np.array([[1., 1., 11., 11.],
-                       [1.1, 1.1, 10, 10],
-                       [2., 2., 9., 9.],
-                       [5., 11., 30., 30.]])
-    bboxes_frcnn = np.array([[1.5, 0.7, 10.1, 9.],
-                       [2.1, 3.1, 15, 11],
-                       [1., 2.2, 9.1, 9.9],
-                       [5.7, 11.8, 28., 31.],
-                       [3.7, 10.8, 27., 28.]])
-    logits_ssd = np.array([[0.1, 0.1, 0.8], 
-                               [0.2, 0.1, 0.7],
-                               [0.3, 0.1, 0.6],
-                               [0.0, 0.7, 0.3]])
-    logits_frcnn = np.array([[0.1, 0.1, 0.8], 
-                                 [0.2, 0.1, 0.7],
-                                 [0.3, 0.1, 0.6],
-                                 [0.5, 0.2, 0.1],
-                                 [0.0, 0.7, 0.3]])
-
-
-    detectors = ['ssd', 'frcnn']
-    bounding_boxes = {}
-    bounding_boxes['ssd'] = bboxes_ssd #np.vstack((bboxes_ssd, bboxes_ssd, bboxes_ssd, bboxes_ssd))
-    bounding_boxes['frcnn'] = bboxes_frcnn #np.vstack((bboxes_frcnn, bboxes_frcnn, bboxes_frcnn, bboxes_frcnn))
-    class_scores = {}
-    class_scores['ssd'] = logits_ssd #np.vstack((logits_ssd, logits_ssd, logits_ssd, logits_ssd))
-    class_scores['frcnn'] = logits_frcnn #np.vstack((logits_frcnn, logits_frcnn, logits_frcnn, logits_frcnn))
-
-    for i in range(1):
-        box_cl = BoxClustering(bounding_boxes = bounding_boxes, class_scores = class_scores, hard_threshold = 0.3, power_iou= 0.5, silent = False)
-        object_boxes, object_detector_names, object_logits, object_I, result_boxes = box_cl.get_candidate_objects()
-
-    number_of_objects = len(object_boxes)
-
-    print(str(number_of_objects) + ' objects detected')
-    for i in range(0, number_of_objects):
-        print('Object ' + str(i) +'. Resulting bounding box: ' + str(result_boxes[i]))
-        number_of_boxes = len(object_boxes[i])
-        number_of_logits = len(object_logits[i])
-        for j in range(0, number_of_logits):
-            if j < number_of_boxes:
-                print('Bounding box: ' + str(object_boxes[i][j]) + '. class_scores: ' + str(object_logits[i][j]) + ' (detected by ' + str(object_detector_names[i][j]) + ')')
-            else:
-                print('No bounding box. Fake class_scores: ' + str(object_logits[i][j]) + ' (NOT detected by ' + str(object_detector_names[i][j]) + ')')
-
-
+        return objects_boxes, objects_detectors_names, objects_class_scores
 
 

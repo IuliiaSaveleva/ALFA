@@ -19,7 +19,7 @@ from read_image import read_one_image
 
 from ssd_detector_module.sdd_detector import *
 from ssd_detector_module.notebooks import visualization
-from computation_map import Computation_mAP
+from map_computation import Computation_mAP
 
 detectors_names_list = ['ssd', 'denet']
 class DynamicBeliefFusion:
@@ -120,9 +120,9 @@ class DynamicBeliefFusion:
         self.denet_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1denet_test_detections.txt')
         self.frcnn_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1frcnn_test_detections.txt')
 
-        self.ssd_full_detections_filename = os.path.join(self.cache_dir, 'original_ssd_results/original_ssd_trully_0.015_vanilla_unique_full_detections.pkl')
-        self.denet_full_detections_filename = os.path.join(self.cache_dir, 'denet_results/denet_0.015_vanilla_unique_full_detections.pkl')
-        self.frcnn_full_detections_filename = os.path.join(self.cache_dir, 'frcnn_results/frcnn_0.015_vanilla_unique_full_detections.pkl')
+        self.ssd_full_detections_filename = os.path.join(self.cache_dir, 'original_ssd_results/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl')
+        self.denet_full_detections_filename = os.path.join(self.cache_dir, 'denet_results/DeNet_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl')
+        self.frcnn_full_detections_filename = os.path.join(self.cache_dir, 'frcnn_results/Faster_R-CNN_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl')
 
         self.ssd_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1original_ssd_validation_full_detections.pkl')
         self.denet_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1denet_validation_full_detections.pkl')
