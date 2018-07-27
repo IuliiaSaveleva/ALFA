@@ -1,5 +1,4 @@
 # (c) Evgeny Razinkov, Kazan Federal University, 2017
-# import frcnn.tools.ensemble_frcnn as afrcnn
 import datetime
 import pickle
 
@@ -18,8 +17,6 @@ from ssd_detector_module.sdd_detector import *
 # import faster_rcnn
 from ssd_lib_razinkov import *
 
-# import init_paths_test
-# from yad2k.test_yolo_v2 import *
 
 ENSEMBLE_BOUNDING_BOX = 'MAX'
 ENSEMBLE_BOUNDING_BOX = 'MIN'

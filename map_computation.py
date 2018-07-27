@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pickle
 import xml.etree.ElementTree as ET
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import argparse
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -10,7 +10,7 @@ import sys
 sys.path.append(script_dir)
 
 from read_image import read_one_image
-import visualization
+# import visualization
 
 
 
@@ -81,8 +81,8 @@ class Computation_mAP:
         return ap
 
 
-    def compute_map(self, dataset_name, images_dir, annotations_dir, imagenames_filename, annotations_filename,
-                    pickled_annotations_filename, detections_filename, ovthresh=0.5):
+    def compute_map(self, dataset_name, dataset_dir, imagenames_filename, annotations_filename,
+                    pickled_annotations_filename, images_detections, map_iou_threshold):
         """
                 Computes mean Average Precision.
 
@@ -91,11 +91,8 @@ class Computation_mAP:
                 dataset_name : string
                     Dataset name, e.g. 'PASCAL VOC'
 
-                images_dir : string
-                    Path to images dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/JPEGImages/'
-
-                annotations_dir : string
-                    Path to annotations dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/Annotations/'
+                dataset_dir : string
+                    Path to images dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/'
 
                 imagenames_filename : string
                     File to store images filenames
@@ -116,7 +113,7 @@ class Computation_mAP:
                     Means all detections found on image "image_filename", where bouning box, label, class score
                         correspond elementwise
 
-                ovthresh : float
+                map_iou_threshold : float
                     Jaccard coefficient value to compute mAP, between [0, 1]
 
 
@@ -143,6 +140,18 @@ class Computation_mAP:
                                 'thresholds'
                             }
                 """
+
+        if not os.path.exists(dataset_dir):
+            print('Dataset dir not found!')
+            exit(1)
+
+        annotations_dir = os.path.join(dataset_dir, 'Annotations/')
+        images_dir = os.path.join(dataset_dir, 'JPEGImages/')
+
+        if dataset_name not in dataset_classnames:
+            print('Invalid dataset name!')
+            exit(1)
+
         classnames = dataset_classnames[dataset_name]
 
         dir = images_dir
@@ -201,16 +210,6 @@ class Computation_mAP:
                 for imagename in recs.keys():
                     if imagename in imagenames:
                         annotated_existing_images.append(imagename)
-
-        if os.path.isfile(detections_filename):
-            with open(detections_filename, 'rb') as f:
-                if sys.version_info[0] == 3:
-                    images_detections = pickle.load(f, encoding='latin1')
-                else:
-                    images_detections = pickle.load(f)
-        else:
-            print('Detections filename was not found!')
-            return None, None, None
 
 
         detections = []
@@ -282,7 +281,7 @@ class Computation_mAP:
                     ovmax = np.max(overlaps)
                     jmax = np.argmax(overlaps)
 
-                if ovmax > ovthresh:
+                if ovmax > map_iou_threshold:
                     if not R['difficult'][jmax]:
                         if not R['det'][jmax]:
                             tp[d] = 1.
@@ -323,31 +322,38 @@ class Computation_mAP:
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_dir', type=str,
-        help='\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\"')
-    parser.add_argument('--detections_filename', type=str,
-        help='Path to detections pickle, default=\"./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\"',
-        default='./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl')
-    parser.add_argument('--imagenames_filename', type=str,
-        help='File where images filenames to compute mAP are stored, default=\"./PASCAL_VOC_pickles/imagesnames_2007_test.txt\"',
-        default='./PASCAL_VOC_pickles/imagesnames_2007_test.txt')
-    parser.add_argument('--annotations_filename', type=str,
-        help='File where annotations filenames to compute mAP are stored, default=\"./PASCAL_VOC_pickles/annotations_2007_test.txt\"',
-        default='./PASCAL_VOC_pickles/annotations_2007_test.txt')
-    parser.add_argument('--pickled_annots_filename', type=str,
-        help='Pickle where annotations to compute mAP are stored, default=\"./PASCAL_VOC_pickles/annots_2007_test.pkl\"',
-        default='./PASCAL_VOC_pickles/annots_2007_test.pkl')
+    parser.add_argument('--dataset_name', type=str, help='Only \"PASCAL VOC\" is supported, default=\"PASCAL VOC\"', default='PASCAL VOC')
+    parser.add_argument('dataset_dir', type=str,
+        help='\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\" where \"Annotations\" and \"JPEGImages\" folders are stored')
+    parser.add_argument('detections_filename', type=str,
+        help='Path to detections pickle, e.g. \"./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\"')
+    parser.add_argument('imagenames_filename', type=str,
+        help='File where images filenames to compute mAP are stored, e.g. \"./PASCAL_VOC_pickles/imagesnames_2007_test.txt\"')
+    parser.add_argument('annotations_filename', type=str,
+        help='File where annotations filenames to compute mAP are stored, e.g. \"./PASCAL_VOC_pickles/annotations_2007_test.txt\"')
+    parser.add_argument('pickled_annots_filename', type=str,
+        help='Pickle where annotations to compute mAP are stored, e.g. \"./PASCAL_VOC_pickles/annots_2007_test.pkl\"')
+    parser.add_argument('--map_iou_threshold', type=float,
+        help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
     return parser.parse_args(argv)
 
 
 def main(args):
-    annotations_dir = os.path.join(args.dataset_dir, 'Annotations/')
-    images_dir = os.path.join(args.dataset_dir, 'JPEGImages/')
+
+    if os.path.isfile(args.detections_filename):
+        with open(args.detections_filename, 'rb') as f:
+            if sys.version_info[0] == 3:
+                images_detections = pickle.load(f, encoding='latin1')
+            else:
+                images_detections = pickle.load(f)
+    else:
+        print('Detections filename was not found!')
+        exit(1)
 
     map_computation = Computation_mAP(None)
-    map_computation.compute_map('PASCAL VOC', images_dir, annotations_dir,
+    map_computation.compute_map(args.dataset_name, args.dataset_dir,
                                 args.imagenames_filename, args.annotations_filename,
-                                args.pickled_annots_filename, args.detections_filename)
+                                args.pickled_annots_filename, images_detections, args.map_iou_threshold)
 
 
 if __name__ == '__main__':

@@ -25,13 +25,6 @@ def get_iou(box1, box2):
     return intersection/union
 
 
-def BC(distribution1, distribution2):
-    bc = 0.0
-    for i in range(0, len(distribution1)):
-        bc += np.sqrt(distribution1[i] * distribution2[i])
-    return bc 
-
-
 def cut_no_object_score(class_scores):
     without_no_object = class_scores[:, 1:]
     class_scores_sum = np.sum(without_no_object, axis = 1)
@@ -47,7 +40,7 @@ def fastIoU(boxes):
     m0T = np.transpose(m0, axes = (1, 0, 2))
     m_up_left = np.maximum(m0[:, :, :2], m0T[:, :, :2])
     m_down_right = np.minimum(m0[:, :, 2:], m0T[:, :, 2:])
-    m_diff = np.clip(m_down_right - m_up_left, a_min = 0.0, a_max = None)
+    m_diff = np.clip(m_down_right - m_up_left, a_min = 0.0, a_max=None)
     m_intersection = m_diff[:, :, 0] * m_diff[:, :, 1]
     m_area = (m0[:, :, 2] - m0[:, :, 0]) * (m0[:, :, 3] - m0[:, :, 1])
     m_T_area = (m0T[:, :, 2] - m0T[:, :, 0]) * (m0T[:, :, 3] - m0T[:, :, 1])
@@ -79,96 +72,14 @@ def fastBC(only_object_scores):
         number_of_actual_classes = len(only_object_scores[0])
     b0 = np.zeros((number_of_boxes, number_of_boxes, number_of_actual_classes))
     b0[:] = only_object_scores
-    b0mul = b0 * np.transpose(b0, axes = (1, 0, 2))
-    bc = np.sum(np.sqrt(b0mul), axis = 2)
+    b0mul = b0 * np.transpose(b0, axes=(1, 0, 2))
+    bc = np.sum(np.sqrt(b0mul), axis=2)
     return bc
 
 
 class BoxClustering:
-    def __init__(self, bounding_boxes, class_scores, hard_threshold=0.5, power_iou=0.5, same_labels_only=True,
-                 use_BC=True, max_1_box_per_detector=True):
-        """
-        Constructor for class responsible for detections clustering.
-
-        Parameters
-        ----------
-        bounding_boxes : dict
-            Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
-
-            Example: {
-            'ssd': [[10, 28, 128, 250],
-                    ...
-                    [55, 120, 506, 709]],
-            ...
-            'denet': [[55, 169, 350, 790],
-                      ...
-                      [20, 19, 890, 620]],
-            }
-
-        class_scores : dict
-            Dictionary, where keys are detector's names and values are numpy arrays of detector's class scores vectors,
-            corresponding to bounding boxes.
-
-            Example: {
-            'ssd': [[0.8, 0.004, ..., 0.000009],
-                    ...
-                    [0.0, 0.9, ..., 0.0001]],
-            ...
-            'denet': [[0.4, 0.4, ..., 0.1],
-                      ...
-                      [0.000001, 0.0000005, ..., 0.9]],
-            }
-
-        hard_threshold : float
-            Parameter τ in the paper, between [0.0, 1.0]
-
-        power_iou : float
-            Parameter γ in the paper, between [0.0, 1.0]
-
-        same_labels_only : boolean
-            True - only detections with same class label will be added into same cluster,
-            False - detections labels won't be taken into account while clustering
-
-        use_BC : boolean
-            True - Bhattacharyya and Jaccard coefficient will be used to compute detections similarity score
-            False - only Jaccard coefficient will be used to compute detections similarity score
-
-        max_1_box_per_detector : boolean
-            True - only one detection form detector could be added to cluster
-            False - multiple detections from same detector could be added to cluster
-
-        """
-        self.hard_threshold = hard_threshold
-        self.power_iou = power_iou
-        self.same_labels_only = same_labels_only
-        self.use_BC = use_BC
-        self.max_1_box_per_detector = max_1_box_per_detector
-
-        self.detector_names = bounding_boxes.keys()
-        number_of_classes = 1
-        if len(self.detector_names) > 0:
-            number_of_classes = len(class_scores[self.detector_names[0]][0])
-
-        self.n_boxes = 0
-        self.bounding_boxes = bounding_boxes
-        self.boxes = np.zeros((0, 4))
-        self.names = np.zeros(0)
-        self.class_scores = np.zeros((0, number_of_classes))
-        self.only_object_scores = np.zeros((0, number_of_classes - 1))
-
-        detector_index = 0
-        self.actual_names = []
-        for detector_name in self.detector_names:
-            detector_boxes = len(bounding_boxes[detector_name])
-            if detector_boxes > 0:
-                self.n_boxes += detector_boxes
-                self.boxes = np.vstack((self.boxes, bounding_boxes[detector_name]))
-                self.actual_names += [detector_name] * detector_boxes
-                self.names = np.hstack((self.names, np.ones(detector_boxes) * detector_index ))
-                self.class_scores = np.vstack((self.class_scores, class_scores[detector_name]))
-            detector_index += 1
-        self.only_object_scores = cut_no_object_score(self.class_scores)
-
+    def __init__(self):
+        pass
 
     def prepare_matrix(self):
         self.sim_matrix = fastIoU(self.boxes)
@@ -199,16 +110,20 @@ class BoxClustering:
 
     def cluster_indices(self, indices):
         clusters = [[a] for a in indices]
-        if len(clusters) == 1:
+        lc = len(indices)
+        if lc == 1:
             return clusters
-        ci1, ci2, sim = self.find_clusters_to_merge(clusters)
-        while sim > self.hard_threshold:
-            clusters = self.merge_clusters(ci1, ci2, clusters)
-            if len(clusters) == 1:
-                return clusters
-            else:
-                ci1, ci2, sim = self.find_clusters_to_merge(clusters)
-        return clusters
+        elif lc == 2:
+            return [clusters[0] + clusters[1]]
+        else:
+            ci1, ci2, sim = self.find_clusters_to_merge(clusters)
+            while sim > self.hard_threshold:
+                clusters = self.merge_clusters(ci1, ci2, clusters)
+                if len(clusters) == 1:
+                    return clusters
+                else:
+                    ci1, ci2, sim = self.find_clusters_to_merge(clusters)
+            return clusters
 
         
     def find_clusters_to_merge(self, clusters):
@@ -249,9 +164,57 @@ class BoxClustering:
         return min_sim
 
 
-    def get_raw_candidate_objects(self):
+    def get_raw_candidate_objects(self, bounding_boxes, class_scores, tau, gamma, same_labels_only, use_BC,
+                 max_1_box_per_detector):
         """
         Clusters detections from different detectors.
+
+        Parameters
+        ----------
+        bounding_boxes : dict
+            Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
+
+            Example: {
+            'ssd': [[10, 28, 128, 250],
+                    ...
+                    [55, 120, 506, 709]],
+            ...
+            'denet': [[55, 169, 350, 790],
+                      ...
+                      [20, 19, 890, 620]],
+            }
+
+        class_scores : dict
+            Dictionary, where keys are detector's names and values are numpy arrays of detector's class scores vectors,
+            corresponding to bounding boxes.
+
+            Example: {
+            'ssd': [[0.8, 0.004, ..., 0.000009],
+                    ...
+                    [0.0, 0.9, ..., 0.0001]],
+            ...
+            'denet': [[0.4, 0.4, ..., 0.1],
+                      ...
+                      [0.000001, 0.0000005, ..., 0.9]],
+            }
+
+        tau : float
+            Parameter tau in the paper, between [0.0, 1.0]
+
+        gamma : float
+            Parameter gamma in the paper, between [0.0, 1.0]
+
+        same_labels_only : boolean
+            True - only detections with same class label will be added into same cluster
+            False - detections labels won't be taken into account while clustering
+
+        use_BC : boolean
+            True - Bhattacharyya and Jaccard coefficient will be used to compute detections similarity score
+            False - only Jaccard coefficient will be used to compute detections similarity score
+
+        max_1_box_per_detector : boolean
+            True - only one detection form detector could be added to cluster
+            False - multiple detections from same detector could be added to cluster
 
         Returns
         -------
@@ -268,6 +231,38 @@ class BoxClustering:
             cluster class scores - class scores, corresponding to bounding boxes added to cluster
 
         """
+
+        self.hard_threshold = tau
+        self.power_iou = gamma
+        self.same_labels_only = same_labels_only
+        self.use_BC = use_BC
+        self.max_1_box_per_detector = max_1_box_per_detector
+
+        self.detector_names = list(bounding_boxes.keys())
+        number_of_classes = 1
+        if len(self.detector_names) > 0:
+            number_of_classes = len(class_scores[self.detector_names[0]][0])
+
+        self.n_boxes = 0
+        self.bounding_boxes = bounding_boxes
+        self.boxes = np.zeros((0, 4))
+        self.names = np.zeros(0)
+        self.class_scores = np.zeros((0, number_of_classes))
+        self.only_object_scores = np.zeros((0, number_of_classes - 1))
+
+        detector_index = 0
+        self.actual_names = []
+        for detector_name in self.detector_names:
+            detector_boxes = len(bounding_boxes[detector_name])
+            if detector_boxes > 0:
+                self.n_boxes += detector_boxes
+                self.boxes = np.vstack((self.boxes, bounding_boxes[detector_name]))
+                self.actual_names += [detector_name] * detector_boxes
+                self.names = np.hstack((self.names, np.ones(detector_boxes) * detector_index))
+                self.class_scores = np.vstack((self.class_scores, class_scores[detector_name]))
+            detector_index += 1
+        self.only_object_scores = cut_no_object_score(self.class_scores)
+
         self.prepare_matrix()
 
         self.get_paths()
@@ -275,10 +270,14 @@ class BoxClustering:
         objects_boxes = []
         objects_detectors_names = []
         objects_class_scores = []
-        result_boxes = []
         np_boxes = np.array(self.boxes)
         np_detectors = np.array(self.actual_names)
         np_class_scores = np.array(self.class_scores)
+        # max_objects = len(self.boxes)
+        # num_objects = 0
+        # main_result_boxes = np.zeros((max_objects, len(self.detector_names), 4))
+        # main_result_names = np.zeros((max_objects, len(self.detector_names)))
+        # main_result_class_scores = np.zeros((max_objects, len(self.detector_names), number_of_classes))
         if len(self.whole_path_matrix):
             unique_whole_path_matrix = np.vstack({tuple(row) for row in self.whole_path_matrix})
             for i in range(0, len(unique_whole_path_matrix)):
@@ -286,14 +285,20 @@ class BoxClustering:
                 if len(indices) > 0:
                     clusters = self.cluster_indices(list(indices))
                     for c in clusters:
+                        # nn = len(c)
+                        # main_result_boxes[num_objects][:nn] = np_boxes[c]
+                        # main_result_names[num_objects][:nn] = np_detectors[c]
+                        # main_result_class_scores[num_objects][:nn] = np_class_scores[c]
+                        # num_objects += 1
+
                         boxes_0 = np_boxes[c]
                         objects_boxes.append(boxes_0)
-                        result_boxes.append(np.average(boxes_0, axis = 0))
                         detectors_0 = list(np_detectors[c])
                         class_scores_0 = list(np_class_scores[c])
                         objects_class_scores.append(class_scores_0)
                         objects_detectors_names.append(detectors_0)
 
         return objects_boxes, objects_detectors_names, objects_class_scores
+        # return main_result_boxes[:num_objects], main_result_names[:num_objects], main_result_class_scores[:num_objects]
 
 
