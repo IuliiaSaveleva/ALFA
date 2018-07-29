@@ -1,5 +1,4 @@
 # (c) Evgeny Razinkov, Kazan Federal University, 2017
-import datetime
 import sys
 import argparse
 import numpy as np
