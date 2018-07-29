@@ -2,15 +2,11 @@ import os
 import numpy as np
 import pickle
 import xml.etree.ElementTree as ET
-# import matplotlib.pyplot as plt
 import argparse
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 import sys
 sys.path.append(script_dir)
-
-from read_image import read_one_image
-# import visualization
 
 
 
@@ -81,72 +77,75 @@ class Computation_mAP:
         return ap
 
 
-    def compute_map(self, dataset_name, dataset_dir, imagenames_filename, annotations_filename,
-                    pickled_annotations_filename, images_detections, map_iou_threshold):
+    def compute_map(self, dataset_name, dataset_dir, imagenames, annotations,
+                    images_detections, map_iou_threshold, weighted_map=False,
+                    full_imagenames=None):
         """
-                Computes mean Average Precision.
+        Computes mean Average Precision.
 
-                Parameters
-                ----------
-                dataset_name : string
-                    Dataset name, e.g. 'PASCAL VOC'
+        Cross_validate_parameters
+        ----------
+        dataset_name : string
+            Dataset name, e.g. 'PASCAL VOC'
 
-                dataset_dir : string
-                    Path to images dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/'
+        dataset_dir : string
+            Path to images dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/'
 
-                imagenames_filename : string
-                    File to store images filenames
+        imagenames : list
+            List contains all or a part of dataset filenames
 
-                annotations_filename : string
-                    File to store annotations filenames
+        annotations : dict
+            Dict of annotations
 
-                pickled_annotations_filename : string
-                    Pickle to store parsed annotations
+        detections_filename : string
+            Pickle to store detections for mAP computation
+            File contains a list of detections for one detector or fusion result, kept in format:
 
-                detections_filename : string
-                    Pickle to store detections for mAP computation
-                    File contains a list of detections for one detector or fusion result, kept in format:
+            (image filename: '00000.png', bounding boxes: [[23, 45, 180, 790], ..., [100, 39, 705, 98]],
+                labels: [0, ..., 19], class_scores: [[0.0, 0.01, ...., 0.98], ..., [0.9, 0.0, ..., 0.001]]),
 
-                    (image filename: '00000.png', bounding boxes: [[23, 45, 180, 790], ..., [100, 39, 705, 98]],
-                        labels: [0, ..., 19], class_scores: [[0.0, 0.01, ...., 0.98], ..., [0.9, 0.0, ..., 0.001]]),
+            Means all detections found on image "image_filename", where bouning box, label, class score
+                correspond elementwise
 
-                    Means all detections found on image "image_filename", where bouning box, label, class score
-                        correspond elementwise
+        map_iou_threshold : float
+            Jaccard coefficient value to compute mAP, between [0, 1]
 
-                map_iou_threshold : float
-                    Jaccard coefficient value to compute mAP, between [0, 1]
+        weighted_map : boolean
+            True - compute weighted mAP by part class samples count to all class samples count in dataset
+            False - compute ordinary mAP
+
+        full_imagenames: list
+            List contains all of dataset filenames, if compute
+            weighted map on a part of dataset
 
 
-                Returns
-                -------
-                aps : list
-                    Average Precision value for each class
+        Returns
+        -------
+        aps : list
+            Average Precision value for each class
 
-                mAP : float
-                    mean Average Precision value
+        mAP : float
+            mean Average Precision value
 
-                pr_curves : dict
-                    Precision-Recall curves for each class stored in format:
-                        pr_curves[
-                            'aeroplane': {
-                                'prec'
-                                'rec'
-                                'thresholds'
-                            },
-                            ...
-                            'train': {
-                                'prec'
-                                'rec'
-                                'thresholds'
-                            }
-                """
+        pr_curves : dict
+            Precision-Recall curves for each class stored in format:
+                pr_curves[
+                    'aeroplane': {
+                        'prec'
+                        'rec'
+                        'thresholds'
+                    },
+                    ...
+                    'train': {
+                        'prec'
+                        'rec'
+                        'thresholds'
+                    }
+        """
 
         if not os.path.exists(dataset_dir):
             print('Dataset dir not found!')
             exit(1)
-
-        annotations_dir = os.path.join(dataset_dir, 'Annotations/')
-        images_dir = os.path.join(dataset_dir, 'JPEGImages/')
 
         if dataset_name not in dataset_classnames:
             print('Invalid dataset name!')
@@ -154,70 +153,14 @@ class Computation_mAP:
 
         classnames = dataset_classnames[dataset_name]
 
-        dir = images_dir
-        filename = imagenames_filename
-
-        if not os.path.isfile(filename):
-            imagenames = []
-            for (dir, subdirs, files) in os.walk(dir):
-                for file in files:
-                    if not file.startswith('.'):
-                        imagenames.append(file)
-            f = open(filename, 'w')
-            for imagename in imagenames:
-                f.write(imagename + '\n')
-            f.close()
-        else:
-            # read list of images
-            with open(imagenames_filename, 'r') as f:
-                lines = f.readlines()
-            imagenames = [x.strip() for x in lines]
-
-        dir = annotations_dir
-        filename = annotations_filename
-
-        if not os.path.isfile(filename):
-            f = open(filename, 'w')
-            for (dir, subdirs, files) in os.walk(dir):
-                for file in files:
-                    if not file.startswith('.') and file.split('.')[0] + '.jpg' in imagenames:
-                        f.write(file + '\n')
-            f.close()
-
-        annotated_existing_images = []
-        if not os.path.isfile(pickled_annotations_filename):
-            with open(annotations_filename, 'r') as f:
-                lines = f.readlines()
-            annotation_names = [x.strip() for x in lines]
-            # load annots
-            recs = {}
-            for i, annotation_name in enumerate(annotation_names):
-                rec, imagename = dataset_parse_functions[dataset_name](os.path.join(annotations_dir, annotation_name))
-                if imagename in imagenames:
-                    annotated_existing_images.append(imagename)
-                    recs[imagename] = rec
-                    if i % 100 == 0:
-                        print('Reading annotation for {:d}/{:d}'.format(
-                            i + 1, len(annotation_names)))
-            # save
-            print('Saving cached annotations to {:s}'.format(pickled_annotations_filename))
-            with open(pickled_annotations_filename, 'wb') as f:
-                pickle.dump(recs, f, protocol=2)
-        else:
-            # load
-            with open(pickled_annotations_filename, 'rb') as f:
-                recs = pickle.load(f)
-                for imagename in recs.keys():
-                    if imagename in imagenames:
-                        annotated_existing_images.append(imagename)
-
-
         detections = []
         for image_detections in images_detections:
             image_detections_count = len(image_detections[1])
             for i in range(image_detections_count):
                 detections.append((image_detections[0], image_detections[1][i], image_detections[2][i],
                                    image_detections[3][i]))
+
+        recs = annotations
 
         pr_curves = {}
 
@@ -227,11 +170,19 @@ class Computation_mAP:
 
             classname = classnames[i]
 
+            if weighted_map:
+                all_class_objects_count = 0
+                for imagename in full_imagenames:
+                    R = [obj for obj in recs[imagename] if obj['name'] == classname]
+                    all_class_objects_count += len(R)
+
             # extract gt objects for this class
             class_recs = {}
             npos = 0
+            current_test_set_class_objects_count = 0
             for imagename in imagenames:
                 R = [obj for obj in recs[imagename] if obj['name'] == classname]
+                current_test_set_class_objects_count += len(R)
                 bbox = np.array([x['bbox'] for x in R])
                 difficult = np.array([x['difficult'] for x in R]).astype(np.bool)
                 det = [False] * len(R)
@@ -239,6 +190,15 @@ class Computation_mAP:
                 class_recs[imagename] = {'bbox': bbox,
                                          'difficult': difficult,
                                          'det': det}
+
+            class_weight = 1.0
+
+            if weighted_map:
+                if current_test_set_class_objects_count == 0:
+                    aps.append(0.0)
+                    continue
+
+                class_weight = float(current_test_set_class_objects_count) / float(all_class_objects_count)
 
             class_indices = [j for j in range(len(detections)) if detections[j][2] == i]
             image_ids = np.array([detections[j][0] for j in range(len(detections))])[class_indices]
@@ -299,7 +259,7 @@ class Computation_mAP:
             # ground truth
             prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
             ap = self.compute_ap(rec, prec, False)
-            aps.append(ap)
+            aps.append(ap * class_weight)
             print(classname + ' AP:', ap)
 
             # plt.plot(rec, prec)
@@ -322,20 +282,68 @@ class Computation_mAP:
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_name', type=str, help='Only \"PASCAL VOC\" is supported, default=\"PASCAL VOC\"', default='PASCAL VOC')
-    parser.add_argument('dataset_dir', type=str,
+    parser.add_argument('--dataset_name', type=str, help='Only \"PASCAL VOC\" is supported, default=\"PASCAL VOC\"',
+                        default='PASCAL VOC')
+    parser.add_argument('--dataset_dir', required=True, type=str,
         help='\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\" where \"Annotations\" and \"JPEGImages\" folders are stored')
-    parser.add_argument('detections_filename', type=str,
+    parser.add_argument('--detections_filename', required=True, type=str,
         help='Path to detections pickle, e.g. \"./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\"')
-    parser.add_argument('imagenames_filename', type=str,
-        help='File where images filenames to compute mAP are stored, e.g. \"./PASCAL_VOC_pickles/imagesnames_2007_test.txt\"')
-    parser.add_argument('annotations_filename', type=str,
-        help='File where annotations filenames to compute mAP are stored, e.g. \"./PASCAL_VOC_pickles/annotations_2007_test.txt\"')
-    parser.add_argument('pickled_annots_filename', type=str,
-        help='Pickle where annotations to compute mAP are stored, e.g. \"./PASCAL_VOC_pickles/annots_2007_test.pkl\"')
+    parser.add_argument('--imagenames_filename', required=True, type=str,
+        help='File to store images filenames of dataset, if compute weighted map, this file contains part of '
+            'dataset filenames, e.g. \"./PASCAL_VOC_files/imagenames_2007_test.txt\"')
+    parser.add_argument('--pickled_annots_filename', required=True, type=str,
+        help='Pickle where annotations to compute mAP are stored, e.g. \"./PASCAL_VOC_files/annots_2007_test.pkl\"')
     parser.add_argument('--map_iou_threshold', type=float,
-        help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
+                        help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
     return parser.parse_args(argv)
+
+
+def read_imagenames(filename, dir):
+    if not os.path.isfile(filename):
+        print('Can not find file:', filename)
+        imagenames = []
+        for (dir, subdirs, files) in os.walk(dir):
+            for file in files:
+                if not file.startswith('.'):
+                    imagenames.append(file)
+        f = open(filename, 'w')
+        for imagename in imagenames:
+            f.write(imagename + '\n')
+        f.close()
+    else:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+        imagenames = [x.strip() for x in lines]
+    return imagenames
+
+
+def read_annotations(filename, dir, imagenames, dataset_name):
+
+    if not os.path.isfile(filename):
+        print('Can not find file:', filename)
+        annotation_names = []
+        for (dir, subdirs, files) in os.walk(dir):
+            for file in files:
+                if not file.startswith('.') and file.split('.')[0] + '.jpg' in imagenames:
+                    annotation_names.append(file)
+        # load annots
+        recs = {}
+        for i, annotation_name in enumerate(annotation_names):
+            rec, imagename = dataset_parse_functions[dataset_name](os.path.join(dir, annotation_name))
+            if imagename in imagenames:
+                recs[imagename] = rec
+                if i % 100 == 0:
+                    print('Reading annotation for {:d}/{:d}'.format(
+                        i + 1, len(annotation_names)))
+        # save
+        print('Saving cached annotations to {:s}'.format(filename))
+        with open(filename, 'wb') as f:
+            pickle.dump(recs, f, protocol=2)
+    else:
+        # load
+        with open(filename, 'rb') as f:
+            recs = pickle.load(f)
+    return recs
 
 
 def main(args):
@@ -350,10 +358,15 @@ def main(args):
         print('Detections filename was not found!')
         exit(1)
 
+    annotations_dir = os.path.join(args.dataset_dir, 'Annotations/')
+    images_dir = os.path.join(args.dataset_dir, 'JPEGImages/')
+
+    imagenames = read_imagenames(args.imagenames_filename, images_dir)
+    annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
+
     map_computation = Computation_mAP(None)
-    map_computation.compute_map(args.dataset_name, args.dataset_dir,
-                                args.imagenames_filename, args.annotations_filename,
-                                args.pickled_annots_filename, images_detections, args.map_iou_threshold)
+    map_computation.compute_map(args.dataset_name, args.dataset_dir, imagenames, annotations, images_detections,
+                                args.map_iou_threshold)
 
 
 if __name__ == '__main__':

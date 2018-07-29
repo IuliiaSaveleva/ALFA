@@ -4,6 +4,7 @@ import numpy as np
 import bbox_clustering as bbox_clustering
 from NMS import bboxes_nms
 
+
 class Object:
     def __init__(self, detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method, class_scores_fusion_method,
                  add_empty_detections, empty_epsilon, confidence_style):
@@ -34,7 +35,7 @@ class Object:
         elif self.bounding_box_fusion_method == 'MOST CONFIDENT':
             return self.np_bounding_boxes[np.argmax(self.np_scores)]
         else:
-            print('Unknown value for bounding_box_fusion_method. Using AVERAGE')
+            print('Unknown value for bounding_box_fusion_method ' + self.bounding_box_fusion_method + '. Using AVERAGE')
             return self.average_bounding_box()
 
 
@@ -55,7 +56,8 @@ class Object:
         elif self.class_scores_fusion_method == 'MOST CONFIDENT':
             return self.np_class_scores[np.argmax(self.np_scores)]
         else:
-            print('Unknown value for class_scores_fusion_method. Using AVERAGE')
+            print('Unknown value for class_scores_fusion_method ' + self.class_scores_fusion_method + '. Using AVERAGE')
+            return self.average_scores()
 
 
     def finalize(self, detectors_names):
@@ -76,7 +78,9 @@ class Object:
             self.np_scores = np.sum(self.np_class_scores[:, 1:], axis=1)
         elif self.confidence_style == 'LABEL':
             self.np_scores = np.amax(self.np_class_scores[:, 1:], axis=1)
-
+        else:
+            print('Unknown value for confidence_style ' + self.confidence_style + '. Using LABEL')
+            self.np_scores = np.amax(self.np_class_scores[:, 1:], axis=1)
 
     def max_bounding_box(self):
         lx = np.amin(self.np_bounding_boxes[:, 0])
@@ -133,11 +137,11 @@ class ALFA:
 
     def ALFA_result(self, detectors_bounding_boxes, detectors_class_scores, tau, gamma, bounding_box_fusion_method,
                         class_scores_fusion_method, add_empty_detections, empty_epsilon, same_labels_only,
-                        confidence_style, use_BC, max_1_box_per_detector):
+                        confidence_style, use_BC, max_1_box_per_detector, single):
         """
         ALFA algorithm
 
-        Parameters
+        Cross_validate_parameters
         ----------
         detectors_bounding_boxes : dict
             Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
@@ -202,7 +206,23 @@ class ALFA:
             True - only one detection form detector could be added to cluster
             False - multiple detections from same detector could be added to cluster
 
+        single : boolean
+            True - computes ALFA prediction for mAP-s computation refered in paper
+            False - computes ALFA prediction for mAP-m computation refered in paper
+
+
+        Returns
+        -------
+        bounding_boxes : list
+            Bounding boxes result of ALFA
+
+        labels : list
+            Labels result of ALFA
+
+        class_scores : list
+            Class scores result of ALFA
         """
+
         object_boxes, object_detector_names, object_class_scores = self.bc.get_raw_candidate_objects(detectors_bounding_boxes,
                                                                                                 detectors_class_scores,
                                                                                                 tau, gamma,
@@ -229,26 +249,27 @@ class ALFA:
         class_scores = np.array(class_scores)
         labels = np.array(labels)
 
-        scores = np.concatenate(class_scores[:, 1:])
-        bounding_boxes = np.concatenate(
-            np.stack([bounding_boxes] * 20, axis=1))
-        labels = np.concatenate([range(20)] * len(labels))
-        class_scores = np.concatenate(
-            np.stack([class_scores] * 20, axis=1))
+        if not single:
+            scores = np.concatenate(class_scores[:, 1:])
+            bounding_boxes = np.concatenate(
+                np.stack([bounding_boxes] * 20, axis=1))
+            labels = np.concatenate([range(20)] * len(labels))
+            class_scores = np.concatenate(
+                np.stack([class_scores] * 20, axis=1))
 
-        indices = np.where(scores > 0.01)[0]
-        bounding_boxes = bounding_boxes[indices]
-        labels = labels[indices]
-        class_scores = class_scores[indices]
-        scores = scores[indices]
-
-        # scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
+            indices = np.where(scores > 0.01)[0]
+            bounding_boxes = bounding_boxes[indices]
+            labels = labels[indices]
+            class_scores = class_scores[indices]
+            scores = scores[indices]
+        else:
+            scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
         labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(
             labels, scores, bounding_boxes, class_scores,
             class_scores, None,
             nms_threshold=0.5)
 
-        return bounding_boxes, labels, class_scores, scores
+        return bounding_boxes, labels, class_scores
 
 

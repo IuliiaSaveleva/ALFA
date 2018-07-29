@@ -169,7 +169,7 @@ class BoxClustering:
         """
         Clusters detections from different detectors.
 
-        Parameters
+        Cross_validate_parameters
         ----------
         bounding_boxes : dict
             Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
@@ -216,6 +216,7 @@ class BoxClustering:
             True - only one detection form detector could be added to cluster
             False - multiple detections from same detector could be added to cluster
 
+
         Returns
         -------
         objects_boxes : list
@@ -229,7 +230,6 @@ class BoxClustering:
         objects_class_scores : list
             List containing [clusters, cluster class scores]
             cluster class scores - class scores, corresponding to bounding boxes added to cluster
-
         """
 
         self.hard_threshold = tau
