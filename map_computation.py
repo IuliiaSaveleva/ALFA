@@ -83,7 +83,6 @@ class Computation_mAP:
         """
         Computes mean Average Precision.
 
-        Cross_validate_parameters
         ----------
         dataset_name : string
             Dataset name, e.g. 'PASCAL VOC'
@@ -287,7 +286,7 @@ def parse_arguments(argv):
     parser.add_argument('--dataset_dir', required=True, type=str,
         help='\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\" where \"Annotations\" and \"JPEGImages\" folders are stored')
     parser.add_argument('--detections_filename', required=True, type=str,
-        help='Path to detections pickle, e.g. \"./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\"')
+        help='Path to detections pickle, e.g. \"./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl\"')
     parser.add_argument('--imagenames_filename', required=True, type=str,
         help='File to store images filenames of dataset, if compute weighted map, this file contains part of '
             'dataset filenames, e.g. \"./PASCAL_VOC_files/imagenames_2007_test.txt\"')

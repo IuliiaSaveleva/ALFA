@@ -16,10 +16,9 @@ def read_detectors_full_detections(detections_filenames):
     """
     Method to read detections into dict
 
-    Cross_validate_parameters
     ----------
-    detections_filename : string
-        Pickle to store detections for mAP computation
+    detections_filenames : list
+        Pickles that store detections for mAP computation
         File contains a list of detections for one detector or fusion result, kept in format:
 
         (image filename: '00000.png', bounding boxes: [[23, 45, 180, 790], ..., [100, 39, 705, 98]],
@@ -48,8 +47,6 @@ def read_detectors_full_detections(detections_filenames):
         ]
     """
 
-    detections_filenames = detections_filenames.split(',')
-
     detectors_full_detections = {}
     for i in range(len(detections_filenames)):
         with open(detections_filenames[i], 'rb') as f:
@@ -74,11 +71,10 @@ def read_detectors_full_detections(detections_filenames):
 
 
 def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections, alfa_parameters_dict,
-                  map_iou_threshold, select_threshold, single, weighted_map=False, full_imagenames=None):
+                  map_iou_threshold, weighted_map=False, full_imagenames=None):
     """
     Validate ALFA algorithm
 
-    Cross_validate_parameters
     ----------
     dataset_name : string
         Dataset name, e.g. 'PASCAL VOC'
@@ -113,13 +109,6 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
     map_iou_threshold : float
         Jaccard coefficient value to compute mAP, between [0, 1]
 
-    select_threshold : float
-        Confidence threshold for detectionss
-
-    single : boolean
-            True - computes ALFA prediction for mAP-s computation refered in paper
-            False - computes ALFA prediction for mAP-m computation refered in paper
-
     weighted_map : boolean
             True - compute weighted mAP by part class samples count to all class samples count in dataset
             False - compute ordinary mAP
@@ -152,7 +141,7 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
                 l = np.array(detectors_full_detections[key][j][2])
                 cl_sc = np.array(detectors_full_detections[key][j][3])
                 scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
-                indices = np.where(scores > select_threshold)[0]
+                indices = np.where(scores > alfa_parameters_dict['select_threshold'])[0]
                 if len(indices) > 0:
                     bounding_boxes[key] = bb[indices]
                     labels[key] = l[indices]
@@ -170,7 +159,7 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
                                                                     alfa_parameters_dict['confidence_style'][0],
                                                                     alfa_parameters_dict['use_BC'][0],
                                                                     alfa_parameters_dict['max_1_box_per_detector'][0],
-                                                                    single)
+                                                                    alfa_parameters_dict['single'])
             time_count += 1
         else:
             bounding_boxes = np.array([])
@@ -213,19 +202,12 @@ def parse_arguments(argv):
                         default='PASCAL VOC')
     parser.add_argument('--dataset_dir', required=True, type=str,
                         help='e.g.=\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\"')
-    parser.add_argument('--detections_filenames', required=True, type=str,
-        help='Path to detections pickles, '
-             'e.g.=\"./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\", '
-             '\"./DeNet_detections/DeNet_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\", '
-             '\"./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\"')
     parser.add_argument('--imagenames_filename', required=True, type=str,
         help='File where images filenames to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/imagesnames_2007_test.txt\"')
     parser.add_argument('--pickled_annots_filename', type=str,
         help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2007_test.pkl\"')
-    parser.add_argument('--select_threshold', required=True, type=float,
-                        help='Confidence threshold for detections')
     parser.add_argument('--alfa_parameters_json', required=True, type=str,
-                        help='File, that contains parameters:'
+                        help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
                              'tau in the paper, between [0.0, 1.0], '
                              'gamma in the paper, between [0.0, 1.0],'
                              'bounding_box_fusion_method [\"MIN\", \"MAX\", \"MOST CONFIDENT\", \"AVERAGE\", '
@@ -237,21 +219,21 @@ def parse_arguments(argv):
                              'cluster, '
                              'confidence_style_list ["LABEL", "ONE MINUS NO OBJECT"], '
                              'use_BC, if true - Bhattacharyya and Jaccard coefficient will be used to compute detections '
-                             'max_1_box_per_detector, if true - only one detection form detector could be added to cluster, ')
+                             'max_1_box_per_detector, if true - only one detection form detector could be added to cluster, '
+                             'single, if true computes ALFA prediction for mAP-s computation refered in paper, '
+                             'select_threshold is the confidence threshold for detections, '
+                             'detections_filenames list of pickles that store detections for mAP computation')
     parser.add_argument('--map_iou_threshold', type=float,
                         help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
-    parser.add_argument('--single', required=True, type=check_flag,
-                        help='True - computes ALFA prediction for mAP-s computation refered in paper, '
-                             'False - computes ALFA prediction for mAP-m computation refered in paper')
     return parser.parse_args(argv)
 
 
 def main(args):
 
-    detectors_full_detections = read_detectors_full_detections(args.detections_filenames)
-
     alfa_parameters_dict = parse_alfa_parameters_json(args.alfa_parameters_json)
     pprint.pprint(alfa_parameters_dict)
+
+    detectors_full_detections = read_detectors_full_detections(alfa_parameters_dict['detections_filenames'])
 
     annotations_dir = os.path.join(args.dataset_dir, 'Annotations/')
     images_dir = os.path.join(args.dataset_dir, 'JPEGImages/')
@@ -260,8 +242,7 @@ def main(args):
     annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
 
     validate_ALFA(args.dataset_name, args.dataset_dir, imagenames,
-                    annotations, detectors_full_detections, alfa_parameters_dict, args.map_iou_threshold,
-                    args.select_threshold, args.single)
+                    annotations, detectors_full_detections, alfa_parameters_dict, args.map_iou_threshold)
 
 
 if __name__ == '__main__':

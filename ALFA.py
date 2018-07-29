@@ -141,7 +141,6 @@ class ALFA:
         """
         ALFA algorithm
 
-        Cross_validate_parameters
         ----------
         detectors_bounding_boxes : dict
             Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
@@ -263,6 +262,7 @@ class ALFA:
             class_scores = class_scores[indices]
             scores = scores[indices]
         else:
+
             scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
         labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(

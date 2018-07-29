@@ -169,7 +169,6 @@ class BoxClustering:
         """
         Clusters detections from different detectors.
 
-        Cross_validate_parameters
         ----------
         bounding_boxes : dict
             Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.

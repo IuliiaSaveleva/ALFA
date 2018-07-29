@@ -13,11 +13,10 @@ from validate_ALFA import validate_ALFA, read_detectors_full_detections, check_f
 
 
 def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections,
-                        alfa_parameters_dict, map_iou_threshold, select_threshold, single, folds_count):
+                        alfa_parameters_dict, map_iou_threshold, folds_count):
     """
     Validate ALFA algorithm
 
-    Cross_validate_parameters
     ----------
     dataset_name : string
         Dataset name, e.g. 'PASCAL VOC'
@@ -35,6 +34,7 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
         Dict of full detections for diferent detectors
 
     alfa_parameters_dict: dict
+
         Contains list of size folds count for each parameter:
 
         tau in the paper, between [0.0, 1.0]
@@ -52,19 +52,12 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
     map_iou_threshold : float
         Jaccard coefficient value to compute mAP, between [0, 1]
 
-    select_threshold : float
-        Confidence threshold for detections
-
-    single : boolean
-        True - computes ALFA prediction for mAP-s computation refered in paper
-        False - computes ALFA prediction for mAP-m computation refered in paper
-
     folds_count : integer
         Number of folds to cross-validate
     """
 
     imagenames = np.array(imagenames)
-    random.seed(123)
+    random.seed(alfa_parameters_dict["seed"])
     random_indices = random.sample(range(len(imagenames)), len(imagenames))
     imagenames = imagenames[random_indices]
 
@@ -89,10 +82,13 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
 
         fold_alfa_parameters = {}
         for key in alfa_parameters_dict:
-            fold_alfa_parameters[key] = [alfa_parameters_dict[key][fold_index]]
+            if type(alfa_parameters_dict[key]) == list and fold_index < len(alfa_parameters_dict[key]):
+                fold_alfa_parameters[key] = [alfa_parameters_dict[key][fold_index]]
+            elif type(alfa_parameters_dict[key]) != list:
+                fold_alfa_parameters[key] = alfa_parameters_dict[key]
 
         aps, _, _ = validate_ALFA(dataset_name, dataset_dir, fold_imagenames, annotations, detectors_fold_detections,
-                                  fold_alfa_parameters, map_iou_threshold, select_threshold, single, weighted_map=True,
+                                  fold_alfa_parameters, map_iou_threshold, weighted_map=True,
                                   full_imagenames=imagenames)
         aps_per_fold.append(aps)
         fold_index += 1
@@ -109,19 +105,12 @@ def parse_arguments(argv):
                         default='PASCAL VOC')
     parser.add_argument('--dataset_dir', required=True, type=str,
                         help='e.g.=\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\"')
-    parser.add_argument('--detections_filenames', required=True, type=str,
-                        help='Path to detections pickles, '
-                             'e.g.=\"./SSD_detections/SSD_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\", '
-                             '\"./DeNet_detections/DeNet_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\", '
-                             '\"./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_unique_detections_PASCAL_VOC_2007_test.pkl\"')
     parser.add_argument('--imagenames_filename', required=True, type=str,
                         help='File where images filenames to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/imagesnames_2007_test.txt\"')
     parser.add_argument('--pickled_annots_filename', type=str,
                         help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2007_test.pkl\"')
-    parser.add_argument('--select_threshold', required=True, type=float,
-                        help='Confidence threshold for detections')
     parser.add_argument('--alfa_parameters_json', required=True, type=str,
-                        help='File, that contains parameters:'
+                        help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
                              'tau in the paper, between [0.0, 1.0], '
                              'gamma in the paper, between [0.0, 1.0],'
                              'bounding_box_fusion_method [\"MIN\", \"MAX\", \"MOST CONFIDENT\", \"AVERAGE\", '
@@ -134,12 +123,12 @@ def parse_arguments(argv):
                              'confidence_style_list ["LABEL", "ONE MINUS NO OBJECT"], '
                              'use_BC, if true - Bhattacharyya and Jaccard coefficient will be used to compute detections '
                              'max_1_box_per_detector, if true - only one detection form detector could be added to cluster, '
+                             'single, if true computes ALFA prediction for mAP-s computation refered in paper, '
+                             'select_threshold is the confidence threshold for detections, '
+                             'detections_filenames list of pickles that store detections for mAP computation, '
                              'all parametes should be of the same amount as folds count')
     parser.add_argument('--map_iou_threshold', type=float,
                         help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
-    parser.add_argument('--single', required=True, type=check_flag,
-                        help='True - computes ALFA prediction for mAP-s computation refered in paper, '
-                             'False - computes ALFA prediction for mAP-m computation refered in paper')
     parser.add_argument('--folds_count', required=True, type=int,
                         help='If used, computes ALFA prediction for mAP-s computation refered in paper, default=5',
                         default=5)
@@ -154,13 +143,13 @@ def main(args):
     imagenames = read_imagenames(args.imagenames_filename, images_dir)
     annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
 
-    detectors_full_detections = read_detectors_full_detections(args.detections_filenames)
-
     alfa_parameters_dict = parse_alfa_parameters_json(args.alfa_parameters_json)
     pprint.pprint(alfa_parameters_dict)
 
+    detectors_full_detections = read_detectors_full_detections(alfa_parameters_dict['detections_filenames'])
+
     cross_validate_ALFA(args.dataset_name, args.dataset_dir, imagenames, annotations, detectors_full_detections,
-                        alfa_parameters_dict, args.map_iou_threshold, args.select_threshold, args.single, args.folds_count)
+                        alfa_parameters_dict, args.map_iou_threshold, args.folds_count)
 
 if __name__ == '__main__':
     main(parse_arguments(sys.argv[1:]))
