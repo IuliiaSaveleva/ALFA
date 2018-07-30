@@ -8,6 +8,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 import sys
 sys.path.append(script_dir)
 
+from reading_methods import read_imagenames, read_annotations
 
 
 def parse_pascal_voc_rec(filename):
@@ -296,53 +297,6 @@ def parse_arguments(argv):
                         help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
     return parser.parse_args(argv)
 
-
-def read_imagenames(filename, dir):
-    if not os.path.isfile(filename):
-        print('Can not find file:', filename)
-        imagenames = []
-        for (dir, subdirs, files) in os.walk(dir):
-            for file in files:
-                if not file.startswith('.'):
-                    imagenames.append(file)
-        f = open(filename, 'w')
-        for imagename in imagenames:
-            f.write(imagename + '\n')
-        f.close()
-    else:
-        with open(filename, 'r') as f:
-            lines = f.readlines()
-        imagenames = [x.strip() for x in lines]
-    return imagenames
-
-
-def read_annotations(filename, dir, imagenames, dataset_name):
-
-    if not os.path.isfile(filename):
-        print('Can not find file:', filename)
-        annotation_names = []
-        for (dir, subdirs, files) in os.walk(dir):
-            for file in files:
-                if not file.startswith('.') and file.split('.')[0] + '.jpg' in imagenames:
-                    annotation_names.append(file)
-        # load annots
-        recs = {}
-        for i, annotation_name in enumerate(annotation_names):
-            rec, imagename = dataset_parse_functions[dataset_name](os.path.join(dir, annotation_name))
-            if imagename in imagenames:
-                recs[imagename] = rec
-                if i % 100 == 0:
-                    print('Reading annotation for {:d}/{:d}'.format(
-                        i + 1, len(annotation_names)))
-        # save
-        print('Saving cached annotations to {:s}'.format(filename))
-        with open(filename, 'wb') as f:
-            pickle.dump(recs, f, protocol=2)
-    else:
-        # load
-        with open(filename, 'rb') as f:
-            recs = pickle.load(f)
-    return recs
 
 
 def main(args):

@@ -5,8 +5,7 @@
     "./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
   ],
   "single": false,
-  "select_threshold": 0.05,
-  "seed": 123,
+  "select_threshold": 0.015,
   "tau": [
     0.4484444201087372,
     0.7423624085485172,
@@ -26,8 +25,8 @@
     "WEIGHTED AVERAGE FINAL LABEL",
     "WEIGHTED AVERAGE FINAL LABEL",
     "WEIGHTED AVERAGE FINAL LABEL",
-    "AVERAGE"]
-,
+    "AVERAGE"
+  ],
   "class_scores_fusion_method": [
     "AVERAGE",
     "AVERAGE",

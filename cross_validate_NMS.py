@@ -11,8 +11,8 @@ from map_computation import Computation_mAP, dataset_classnames, read_imagenames
 from validate_ALFA import validate_ALFA, read_detectors_full_detections, check_flag, parse_alfa_parameters_json
 
 
-def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections,
-                        alfa_parameters_dict, map_iou_threshold, folds_count):
+def cross_validate_NMS(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections,
+                        nms_parameters_dict, map_iou_threshold, folds_count):
     """
     Validate ALFA algorithm
 
@@ -57,6 +57,9 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
 
     imagenames = sorted(imagenames)
     imagenames = np.array(imagenames)
+    #random.seed(alfa_parameters_dict["seed"])
+    #random_indices = random.sample(range(len(imagenames)), len(imagenames))
+    #imagenames = imagenames[random_indices]
 
     kf = KFold(n_splits=folds_count)
     fold_index = 0

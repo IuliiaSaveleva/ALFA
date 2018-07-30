@@ -1,3 +1,4 @@
+import pickle
 import datetime
 import argparse
 import sys
@@ -6,9 +7,67 @@ import json
 import pprint
 import os
 
-from map_computation import Computation_mAP
-from reading_methods import read_detectors_full_detections, read_imagenames, read_annotations
+from map_computation import Computation_mAP, read_imagenames, read_annotations
 from ALFA import ALFA
+
+
+def read_detectors_full_detections(detections_filenames):
+
+    """
+    Method to read detections into dict
+
+    ----------
+    detections_filenames : list
+        Pickles that store detections for mAP computation
+        File contains a list of detections for one detector or fusion result, kept in format:
+
+        (image filename: '00000.png', bounding boxes: [[23, 45, 180, 790], ..., [100, 39, 705, 98]],
+            labels: [0, ..., 19], class_scores: [[0.0, 0.01, ...., 0.98], ..., [0.9, 0.0, ..., 0.001]])
+
+
+    Returns
+    -------
+    detectors_full_detections: dict
+        Dictionary, containing detections for n detectors:
+
+        '1': [
+        (image filename: '00000.png', bounding boxes: [[23, 45, 180, 790], ..., [100, 39, 705, 98]],
+            labels: [0, ..., 19], class_scores: [[0.0, 0.01, ...., 0.98], ..., [0.9, 0.0, ..., 0.001]]),
+        ...,
+        (image filename: '00500.png', bounding boxes: [[32, 54, 81, 97], ..., [1, 93, 507, 890]],
+            labels: [0, ..., 19], class_scores: [[0.0, 0.001, ...., 0.97], ..., [0.95, 0.00001, ..., 0.0001]])
+        ],
+        ...,
+        'n': [
+        (image filename: '00000.png', bounding boxes: [[33, 55, 180, 800], ..., [110, 49, 715, 108]],
+            labels: [0, ..., 19], class_scores: [[0.01, 0.01, ...., 0.98], ..., [0.8, 0.0002, ..., 0.001]]),
+        ...,
+        (image filename: '00500.png', bounding boxes: [[13, 35, 170, 780], ..., [90, 29, 695, 88]],
+            labels: [0, ..., 19], class_scores: [[0.08, 0.2, ...., 0.06], ..., [0.0, 0.0, ..., 1.0]])
+        ]
+    """
+
+    detectors_full_detections = {}
+    for i in range(len(detections_filenames)):
+        with open(detections_filenames[i], 'rb') as f:
+            if sys.version_info[0] == 3:
+                detectors_full_detections[i] = pickle.load(f, encoding='latin1')
+            else:
+                detectors_full_detections[i] = pickle.load(f)
+
+    if len(list(detectors_full_detections.keys())) == 0:
+        print('Detections even for one detector were not provided!')
+        exit(1)
+    else:
+        check_size_sim = True
+        for i in range(1, len(list(detectors_full_detections.keys()))):
+            if len(detectors_full_detections[i]) != len(detectors_full_detections[0]):
+                check_size_sim = False
+                break
+        if not check_size_sim:
+            print('All detections files should provide detections for the same amount of images with same names!')
+            exit(1)
+    return detectors_full_detections
 
 
 def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections, alfa_parameters_dict,

@@ -4,50 +4,49 @@
     "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl",
     "./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
   ],
-  "single": true,
+  "single": false,
   "select_threshold": 0.05,
-  "seed": 122,
   "tau": [
-    0.7520381588802675,
-    0.7520381588802675,
-    0.7520381588802675,
-    0.7520381588802675,
-    0.7520381588802675
+    0.4484444201087372,
+    0.7423624085485172,
+    0.7423624085485172,
+    0.7423624085485172,
+    0.5256937704720267
   ],
   "gamma": [
-   0.28014759247209853,
-   0.28014759247209853,
-   0.28014759247209853,
-   0.28014759247209853,
-   0.28014759247209853
+    0.6214828696692978,
+    0.3015018156377652,
+    0.3015018156377652,
+    0.3015018156377652,
+    0.6335937471645083
   ],
   "bounding_box_fusion_method": [
+    "AVERAGE",
     "WEIGHTED AVERAGE FINAL LABEL",
     "WEIGHTED AVERAGE FINAL LABEL",
     "WEIGHTED AVERAGE FINAL LABEL",
-    "WEIGHTED AVERAGE FINAL LABEL",
-    "WEIGHTED AVERAGE FINAL LABEL"
-  ],
+    "AVERAGE"]
+,
   "class_scores_fusion_method": [
-    "MULTIPLY",
-    "MULTIPLY",
-    "MULTIPLY",
-    "MULTIPLY",
-    "MULTIPLY"
+    "AVERAGE",
+    "AVERAGE",
+    "AVERAGE",
+    "AVERAGE",
+    "AVERAGE"
   ],
   "epsilon":[
-    0.169091521845813,
-    0.169091521845813,
-    0.169091521845813,
-    0.169091521845813,
-    0.169091521845813
+    0.37537011352851984,
+    0.39012134310602187,
+    0.39012134310602187,
+    0.39012134310602187,
+    0.23952742075621797
   ],
   "same_labels_only": [
+    false,
     true,
     true,
     true,
-    true,
-    true
+    false
   ],
   "add_empty_detections":[
     true,

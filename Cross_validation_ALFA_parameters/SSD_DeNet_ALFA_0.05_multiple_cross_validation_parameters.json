@@ -4,8 +4,7 @@
     "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
   ],
   "single": false,
-  "select_threshold": 0.015,
-  "seed": 126,
+  "select_threshold": 0.05,
   "tau": [
     0.7266443010390319,
     0.7266443010390319,

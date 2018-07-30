@@ -1,31 +1,31 @@
 {
-    "detections_filenames": [
+  "detections_filenames": [
     "./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl",
-    "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
+    "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl",
+    "./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
   ],
   "single": true,
-  "select_threshold": 0.05,
-  "seed": 123,
+  "select_threshold": 0.015,
   "tau": [
-    0.4833061430649309,
-    0.45587675111240133,
-    0.4833061430649309,
-    0.4833061430649309,
-    0.34109127588548305
+    0.7520381588802675,
+    0.7520381588802675,
+    0.7520381588802675,
+    0.7520381588802675,
+    0.7520381588802675
   ],
   "gamma": [
-    0.2171683854488066,
-    0.30209940216063647,
-    0.2171683854488066,
-    0.2171683854488066,
-    0.9080291528554802
+   0.28014759247209853,
+   0.28014759247209853,
+   0.28014759247209853,
+   0.28014759247209853,
+   0.28014759247209853
   ],
   "bounding_box_fusion_method": [
     "WEIGHTED AVERAGE FINAL LABEL",
-    "WEIGHTED AVERAGE",
     "WEIGHTED AVERAGE FINAL LABEL",
     "WEIGHTED AVERAGE FINAL LABEL",
-    "WEIGHTED AVERAGE"
+    "WEIGHTED AVERAGE FINAL LABEL",
+    "WEIGHTED AVERAGE FINAL LABEL"
   ],
   "class_scores_fusion_method": [
     "MULTIPLY",
@@ -35,11 +35,11 @@
     "MULTIPLY"
   ],
   "epsilon":[
-    0.557035919458682,
-    0.3154446743607744,
-    0.557035919458682,
-    0.557035919458682,
-    0.29491359119917887
+    0.169091521845813,
+    0.169091521845813,
+    0.169091521845813,
+    0.169091521845813,
+    0.169091521845813
   ],
   "same_labels_only": [
     true,
