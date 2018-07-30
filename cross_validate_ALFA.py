@@ -7,8 +7,8 @@ import pprint
 import os
 
 from sklearn.model_selection import KFold
-from map_computation import Computation_mAP, dataset_classnames, read_imagenames, read_annotations
 from validate_ALFA import validate_ALFA, read_detectors_full_detections, check_flag, parse_alfa_parameters_json
+from reading_methods import read_imagenames, read_annotations
 
 
 def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections,

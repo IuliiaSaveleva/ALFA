@@ -1,46 +1,14 @@
 import os
 import numpy as np
 import pickle
-import xml.etree.ElementTree as ET
 import argparse
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 import sys
 sys.path.append(script_dir)
 
-from reading_methods import read_imagenames, read_annotations
+from reading_methods import read_imagenames, read_annotations, dataset_classnames
 
-
-def parse_pascal_voc_rec(filename):
-    """ Parse a PASCAL VOC xml file """
-    tree = ET.parse(filename)
-    objects = []
-    imagename = tree.find('filename').text
-    for obj in tree.findall('object'):
-        obj_struct = {}
-        obj_struct['name'] = obj.find('name').text
-        try:
-            obj_struct['difficult'] = int(obj.find('difficult').text)
-        except:
-            obj_struct['difficult'] = 0
-        bbox = obj.find('bndbox')
-        obj_struct['bbox'] = [int(float(bbox.find('xmin').text)),
-                              int(float(bbox.find('ymin').text)),
-                              int(float(bbox.find('xmax').text)),
-                              int(float(bbox.find('ymax').text))]
-        objects.append(obj_struct)
-
-    return objects, imagename
-
-
-dataset_parse_functions = {
-    'PASCAL VOC': parse_pascal_voc_rec,
-}
-
-dataset_classnames = {
-    'PASCAL VOC': ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog',
-                   'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor'],
-}
 
 class Computation_mAP:
 
