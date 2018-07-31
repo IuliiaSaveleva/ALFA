@@ -110,11 +110,11 @@ class BoxClustering:
 
     def cluster_indices(self, indices):
         clusters = [[a] for a in indices]
-        lc = len(indices)
+        lc = len(clusters)
         if lc == 1:
             return clusters
-        elif lc == 2:
-            return [clusters[0] + clusters[1]]
+        # elif lc == 2:
+        #     return [clusters[0] + clusters[1]]
         else:
             ci1, ci2, sim = self.find_clusters_to_merge(clusters)
             while sim > self.hard_threshold:

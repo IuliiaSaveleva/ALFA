@@ -1,17 +1,18 @@
 # (c) Evgeny Razinkov, Kazan Federal University, 2017
 import datetime
 import pickle
+import numpy as np
+import os
 
-from computation_map import Computation_mAP
-
+from reading_methods import  dataset_classnames
+from map_computation import Computation_mAP
 import bbox_clustering_another_version_4 as bbox_clustering
-from ssd_detector_module.sdd_detector import *
+from NMS import bboxes_nms
 # import tensorflow as tf
 #import matplotlib.pyplot as plt
 # import ssd
 # import yolo2
 # import faster_rcnn
-from ssd_lib_razinkov import *
 
 # import pyximport
 # pyximport.install()
@@ -363,18 +364,18 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
     global EMPTY_EPSILON
     global SAME_LABELS_ONLY
 
-    cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'ssd_results/ssd_imagesnames_2007.txt')
-    cross_validation_ensemble_annotations_filename = os.path.join(cache_dir, 'ssd_results/ssd_annotations_2007.txt')
+    cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/imagesnames_2007_test.txt')
+    cross_validation_ensemble_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_annotations_2007.txt')
     cross_validation_ensemble_pickled_annotations_filename = os.path.join(cache_dir,
-                                                                  'ssd_results/ssd_annots_2007.pkl')
+                                                                  'PASCAL_VOC_files/ssd_annots_2007.pkl')
     cross_validation_ensemble_detections_filename = os.path.join(cache_dir,
                             'cross_validation/' +  '_'.join(detectors_names) + unique + '_ensemble_fast_detections_2007_test1.txt')
     cross_validation_ensemble_full_detections_filename = os.path.join(cache_dir,
                         'cross_validation/' + '_'.join(detectors_names) + unique + '_ensemble_fast_full_detections_2007_test1.pkl')
 
-    ssd_imagenames_filename = os.path.join(cache_dir, 'ssd_results/ssd_imagesnames_2007.txt')
-    ssd_annotations_filename = os.path.join(cache_dir, 'ssd_results/ssd_annotations_2007.txt')
-    ssd_pickled_annotations_filename = os.path.join(cache_dir, 'ssd_results/ssd_annots_2007.pkl')
+    ssd_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_imagesnames_2007.txt')
+    ssd_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_annotations_2007.txt')
+    ssd_pickled_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_annots_2007.pkl')
 
     if not os.path.exists(cross_validation_ensemble_imagenames_filename):
         with open(ssd_imagenames_filename, 'r') as f:
@@ -510,7 +511,7 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
 
                                                     scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
-                                                labels, scores, bounding_boxes, class_scores, _ = np_methods.bboxes_nms(
+                                                labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(
                                                     labels, scores, bounding_boxes, class_scores,
                                                     class_scores, None,
                                                     nms_threshold=0.5)

@@ -13,6 +13,7 @@ class Object:
         self.add_empty_detections = add_empty_detections
         self.empty_epsilon = empty_epsilon
         self.confidence_style = confidence_style
+        self.detectors_names = detectors_names
 
         self.number_of_classes = len(class_scores[0]) if len(class_scores) > 0 else 0
         self.bounding_boxes = bounding_boxes
@@ -113,8 +114,8 @@ class Object:
         return bounding_box
 
 
-    def get_object(self, detectors_names):
-        self.finalize(detectors_names)
+    def get_object(self):
+        self.finalize(self.detectors_names)
         if len(self.class_scores) > 0:
             if self.add_empty_detections:
                 self.effective_scores = len(self.np_scores)
@@ -222,17 +223,17 @@ class ALFA:
             Class scores result of ALFA
         """
 
-        object_boxes, object_detector_names, object_class_scores = self.bc.get_raw_candidate_objects(detectors_bounding_boxes,
+        objects_boxes, objects_detector_names, objects_class_scores = self.bc.get_raw_candidate_objects(detectors_bounding_boxes,
                                                                                                 detectors_class_scores,
                                                                                                 tau, gamma,
                                                                                                 same_labels_only, use_BC,
                                                                                                 max_1_box_per_detector)
 
         objects = []
-        for i in range(0, len(object_boxes)):
-            objects.append(Object(object_detector_names[i],
-                       object_boxes[i],
-                       object_class_scores[i], bounding_box_fusion_method, class_scores_fusion_method,
+        for i in range(0, len(objects_boxes)):
+            objects.append(Object(objects_detector_names[i],
+                       objects_boxes[i],
+                       objects_class_scores[i], bounding_box_fusion_method, class_scores_fusion_method,
                        add_empty_detections, empty_epsilon, confidence_style))
 
         bounding_boxes = []
