@@ -2,16 +2,15 @@
 import datetime
 import pickle
 
-from computation_map import Computation_mAP
+from map_computation import Computation_mAP
 
 import bbox_clustering_another_version_4 as bbox_clustering
-from ssd_detector_module.sdd_detector import *
+
 # import tensorflow as tf
 #import matplotlib.pyplot as plt
 # import ssd
 # import yolo2
 # import faster_rcnn
-from ssd_lib_razinkov import *
 
 # import pyximport
 # pyximport.install()
