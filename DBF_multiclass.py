@@ -454,7 +454,8 @@ class DynamicBeliefFusion:
 
         m_T_f = calculate_hypothesis_bpa(0, 2)
         m_notT_f = calculate_hypothesis_bpa(1, 2)
-        N = m_T_f + m_notT_f + np.prod(detector_prediction[(np.array(range(len(detector_prediction))), np.array([2] * len(detector_prediction)))])
+        N = m_T_f + m_notT_f + np.prod(detector_prediction[(np.array(range(len(detector_prediction))),
+                                                            np.array([2] * len(detector_prediction)))])
         m_T_f /= N + epsilon
         m_notT_f /= N + epsilon
         return m_T_f, m_notT_f

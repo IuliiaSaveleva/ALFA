@@ -241,7 +241,7 @@ class ALFA:
         labels = []
         for detected_object in objects:
             object_bounding_box, object_class_scores, object_label = \
-                detected_object.get_object(detectors_bounding_boxes.keys())
+                detected_object.get_object()
             bounding_boxes.append(object_bounding_box)
             class_scores.append(object_class_scores)
             labels.append(object_label)

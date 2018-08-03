@@ -1,22 +1,25 @@
 # (c) Evgeny Razinkov, Kazan Federal University, 2017
-import datetime
-import pickle
-import numpy as np
 import os
-
-from reading_methods import dataset_classnames, read_imagenames, read_annotations
-from map_computation import Computation_mAP
+import pickle
+import datetime
 import bbox_clustering_another_version_4 as bbox_clustering
-from ALFA import ALFA
-from NMS import bboxes_nms
+# import pyximport
+# pyximport.install()
+
+import numpy as np
 # import tensorflow as tf
 #import matplotlib.pyplot as plt
 # import ssd
 # import yolo2
 # import faster_rcnn
+# from ssd_lib_razinkov import *
+from read_image import read_one_image
 
-# import pyximport
-# pyximport.install()
+# from ssd_detector_module.sdd_detector import *
+# from ssd_detector_module.notebooks import visualization
+from map_computation import Computation_mAP
+from reading_methods import read_imagenames, read_annotations, dataset_classnames
+from NMS import bboxes_nms
 
 ENSEMBLE_BOUNDING_BOX = 'MAX'
 ENSEMBLE_BOUNDING_BOX = 'MIN'
@@ -34,54 +37,13 @@ IOU_POWER = 0.5
 EMPTY_EPSILON = 0.1
 CONFIDENCE_STYLE = 'LABEL'
 CONFIDENCE_STYLE = 'ONE_MINUS_NO_OBJECT'
-SAME_LABELS_ONLY = True
-SAME_LABELS_ONLY = False
 
-unique = '_unique'
 vanilla = True
 detectors_names = ['ssd', 'denet']
 select_threshold = {
     'ssd': 0.05,
-    'denet': 0.05,
-    'frcnn': 0.05
+    'denet': 0.05
 }
-
-add_empty_detections_values = [True]
-confidence_style_values = ['LABEL']
-ensemble_bounding_box_values = ['WEIGHTED_AVERAGE_FINAL_LABEL']
-# ensemble_bounding_box_values = ['WEIGHTED AVERAGE FINAL LABEL']
-ensemble_scores_values = ['MULTIPLY']
-iou_threshold_values = [0.4833061430649309]
-iou_power_values = [0.2171683854488066]
-empty_epsilon_values = [0.557035919458682]
-same_labels_only_values = [True]
-
-# add_empty_detections_values = [True]
-# confidence_style_values = ['LABEL']
-# ensemble_bounding_box_values = ['WEIGHTED_AVERAGE_FINAL_LABEL']
-# ensemble_scores_values = ['MULTIPLY']
-# iou_threshold_values = [0.4833061430649309]
-# iou_power_values = [0.2171683854488066]
-# empty_epsilon_values = [0.557035919458682]
-# same_labels_only_values = [True]
-
-# add_empty_detections_values = [True]
-# confidence_style_values = ['LABEL']
-# ensemble_bounding_box_values = ['WEIGHTED_AVERAGE_FINAL_LABEL']
-# ensemble_scores_values = ['AVERAGE']
-# iou_threshold_values = [0.7266443010390319]
-# iou_power_values = [0.2520069952089646]
-# empty_epsilon_values = [0.2574298391671611]
-# same_labels_only_values = [True]
-
-# add_empty_detections_values = [True]
-# confidence_style_values = ['LABEL']
-# ensemble_bounding_box_values = ['AVERAGE']
-# ensemble_scores_values = ['AVERAGE']
-# iou_threshold_values = [0.4484444201087372]
-# iou_power_values = [0.6214828696692978]
-# empty_epsilon_values = [0.37537011352851984]
-# same_labels_only_values = [False]
 
 class Object:
     def __init__(self, detector_name, bounding_box, class_scores, thresholds):
@@ -303,7 +265,7 @@ class ObjectDetectionEnsemble:
                                     times_used[old_detector_name][old_bb] += 1
             old_detectors.append(detector_name)
         """
-        bc = bbox_clustering.BoxClustering(bounding_boxes = bounding_boxes, class_scores = class_scores, hard_threshold=IOU_THRESHOLD, power_iou=IOU_POWER, same_labels_only=SAME_LABELS_ONLY, silent = True)
+        bc = bbox_clustering.BoxClustering(bounding_boxes = bounding_boxes, class_scores = class_scores, hard_threshold = IOU_THRESHOLD, power_iou= IOU_POWER, silent = True)
         object_boxes, object_detector_names, object_class_scores = bc.get_raw_candidate_objects()
         
         for i in range(0, len(object_boxes)):
@@ -357,6 +319,14 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
     cache_dir = './'
     classnames = dataset_classnames[dataset_name]
 
+    add_empty_detections_values = [True]
+    confidence_style_values = ['LABEL']
+    ensemble_bounding_box_values = ['WEIGHTED_AVERAGE_FINAL_LABEL']
+    ensemble_scores_values = ['MULTIPLY']
+    iou_threshold_values = [0.4833061430649309]
+    iou_power_values = [0.2171683854488066]
+    empty_epsilon_values = [0.557035919458682]
+
     global ENSEMBLE_BOUNDING_BOX
     global ENSEMBLE_SCORES
     global ADD_EMPTY_DETECTIONS
@@ -364,16 +334,15 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
     global IOU_POWER
     global CONFIDENCE_STYLE
     global EMPTY_EPSILON
-    global SAME_LABELS_ONLY
 
-    cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_imagenames.txt')
-    cross_validation_ensemble_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_annotations.txt')
+    cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/imagenames_2007_test.txt')
+    cross_validation_ensemble_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/annots_2007_test.txt')
     cross_validation_ensemble_pickled_annotations_filename = os.path.join(cache_dir,
                                                                   'PASCAL_VOC_files/ssd_annots.pkl')
     cross_validation_ensemble_detections_filename = os.path.join(cache_dir,
-                            '_'.join(detectors_names) + unique + '_ensemble_fast_detections_2007_test1.txt')
+                            '_'.join(detectors_names) + '_validation_ensemble_detections.txt')
     cross_validation_ensemble_full_detections_filename = os.path.join(cache_dir,
-                        '_'.join(detectors_names) + unique + '_ensemble_fast_full_detections_2007_test1.pkl')
+                        '_'.join(detectors_names) + '_validation_ensemble_full_detections.pkl')
 
     ssd_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_imagenames.txt')
     ssd_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_annotations.txt')
@@ -398,187 +367,164 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
             pickle.dump(content, f)
 
     ssd_full_detections_filename = os.path.join(cache_dir, 'SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
+    yolo_full_detections_filename = os.path.join(cache_dir, 'yolo_results/yolo_0.01_full_detections.pkl')
     frcnn_full_detections_filename = os.path.join(cache_dir, 'Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
     denet_full_detections_filename = os.path.join(cache_dir, 'DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
 
     with open(ssd_full_detections_filename, 'rb') as f:
         ssd_full_detections = pickle.load(f)
+    # with open(yolo_full_detections_filename, 'rb') as f:
+    #     yolo_full_detections = pickle.load(f)
     with open(frcnn_full_detections_filename, 'rb') as f:
         frcnn_full_detections = pickle.load(f)
     with open(denet_full_detections_filename, 'rb') as f:
         denet_full_detections = pickle.load(f)
 
-    for same_labels_only_value in same_labels_only_values:
-        for add_empty_detections_value in add_empty_detections_values:
-            for confidence_style in confidence_style_values:
-                for ensemble_bounding_box_value in ensemble_bounding_box_values:
-                    for ensemble_scores_value in ensemble_scores_values:
-                        for iou_threshold_value in iou_threshold_values:
-                            for iou_power_value in iou_power_values:
-                                for empty_epsilon in empty_epsilon_values:
-                                    if os.path.isfile(cross_validation_ensemble_detections_filename):
-                                        os.remove(cross_validation_ensemble_detections_filename)
+    for add_empty_detections_value in add_empty_detections_values:
+        for confidence_style in confidence_style_values:
+            for ensemble_bounding_box_value in ensemble_bounding_box_values:
+                for ensemble_scores_value in ensemble_scores_values:
+                    for iou_threshold_value in iou_threshold_values:
+                        for iou_power_value in iou_power_values:
+                            for empty_epsilon in empty_epsilon_values:
+                                if os.path.isfile(cross_validation_ensemble_detections_filename):
+                                    os.remove(cross_validation_ensemble_detections_filename)
 
-                                    ENSEMBLE_BOUNDING_BOX = ensemble_bounding_box_value
-                                    print('ENSEMBLE_BOUNDING_BOX:', ENSEMBLE_BOUNDING_BOX)
-                                    ENSEMBLE_SCORES = ensemble_scores_value
-                                    print('ENSEMBLE_SCORES:', ENSEMBLE_SCORES)
-                                    ADD_EMPTY_DETECTIONS = add_empty_detections_value
-                                    print('ADD_EMPTY_DETECTIONS:', ADD_EMPTY_DETECTIONS)
-                                    IOU_THRESHOLD = iou_threshold_value
-                                    print('IOU_THRESHOLD:', IOU_THRESHOLD)
-                                    IOU_POWER = iou_power_value
-                                    print('IOU_POWER:', IOU_POWER)
-                                    CONFIDENCE_STYLE = confidence_style
-                                    print('CONFIDENCE_STYLE:', CONFIDENCE_STYLE)
-                                    EMPTY_EPSILON = empty_epsilon
-                                    print('EMPTY_EPSILON', EMPTY_EPSILON)
-                                    SAME_LABELS_ONLY = same_labels_only_value
-                                    print('SAME_LABELS_ONLY', SAME_LABELS_ONLY)
-                                    total_time = 0
-                                    time_count = 0
+                                ENSEMBLE_BOUNDING_BOX = ensemble_bounding_box_value
+                                print('ENSEMBLE_BOUNDING_BOX:', ENSEMBLE_BOUNDING_BOX)
+                                ENSEMBLE_SCORES = ensemble_scores_value
+                                print('ENSEMBLE_SCORES:', ENSEMBLE_SCORES)
+                                ADD_EMPTY_DETECTIONS = add_empty_detections_value
+                                print('ADD_EMPTY_DETECTIONS:', ADD_EMPTY_DETECTIONS)
+                                IOU_THRESHOLD = iou_threshold_value
+                                print('IOU_THRESHOLD:', IOU_THRESHOLD)
+                                IOU_POWER = iou_power_value
+                                print('IOU_POWER:', IOU_POWER)
+                                CONFIDENCE_STYLE = confidence_style
+                                print('CONFIDENCE_STYLE:', CONFIDENCE_STYLE)
+                                EMPTY_EPSILON = empty_epsilon
+                                print('EMPTY_EPSILON', EMPTY_EPSILON)
+                                total_time = 0
+                                time_count = 0
 
-                                    a = datetime.datetime.now()
+                                a = datetime.datetime.now()
 
-                                    alfa = ALFA()
+                                full_detections = []
+                                if not os.path.exists(cross_validation_ensemble_detections_filename):
+                                    f = open(cross_validation_ensemble_detections_filename, 'w')
+                                    for j in range(len(denet_full_detections)):
+                                        imagename = denet_full_detections[j][0]
 
-                                    full_detections = []
-                                    if not os.path.exists(cross_validation_ensemble_detections_filename):
-                                        f = open(cross_validation_ensemble_detections_filename, 'w')
-                                        for j in range(len(denet_full_detections)):
-                                            imagename = denet_full_detections[j][0]
+                                        bounding_boxes = {}
+                                        labels = {}
+                                        class_scores = {}
 
-                                            bounding_boxes = {}
-                                            labels = {}
-                                            class_scores = {}
+                                        if 'ssd' in detectors_names and len(ssd_full_detections[j][1]) > 0:
+                                            bb = ssd_full_detections[j][1]
+                                            l = np.array(ssd_full_detections[j][2])
+                                            cl_sc = np.array(ssd_full_detections[j][3])
+                                            scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
+                                            indices = np.where(scores > select_threshold['ssd'])[0]
+                                            if len(indices) > 0:
+                                                bounding_boxes['ssd'] = bb[indices]
+                                                labels['ssd'] = l[indices]
+                                                class_scores['ssd'] = cl_sc[indices]
+                                                if not vanilla:
+                                                    labels['ssd'] = np.argmax(class_scores['ssd'][:, 1:], 1)
+                                        if 'frcnn' in detectors_names and len(frcnn_full_detections[j][1]) > 0:
+                                            bb = frcnn_full_detections[j][1]
+                                            l = frcnn_full_detections[j][2]
+                                            cl_sc = frcnn_full_detections[j][3]
+                                            scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
+                                            indices = np.where(scores > select_threshold['frcnn'])[0]
+                                            if len(indices) > 0:
+                                                bounding_boxes['frcnn'] = bb[indices]
+                                                labels['frcnn'] = l[indices]
+                                                class_scores['frcnn'] = cl_sc[indices]
+                                                if not vanilla:
+                                                    labels['frcnn'] = np.argmax(class_scores['frcnn'][:, 1:], 1)
+                                        if 'denet' in detectors_names and len(denet_full_detections[j][1]) > 0:
+                                            bb = denet_full_detections[j][1]
+                                            l = denet_full_detections[j][2]
+                                            cl_sc = denet_full_detections[j][3]
+                                            scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
+                                            indices = np.where(scores > select_threshold['denet'])[0]
+                                            if len(indices) > 0:
+                                                bounding_boxes['denet'] = bb[indices]
+                                                labels['denet'] = l[indices]
+                                                class_scores['denet'] = cl_sc[indices]
+                                                if not vanilla:
+                                                    labels['denet'] = np.argmax(class_scores['denet'][:, 1:], 1)
 
-                                            if 'ssd' in detectors_names and len(ssd_full_detections[j][1]) > 0:
-                                                bb = ssd_full_detections[j][1]
-                                                l = np.array(ssd_full_detections[j][2])
-                                                cl_sc = np.array(ssd_full_detections[j][3])
-                                                scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
-                                                indices = np.where(scores > select_threshold['ssd'])[0]
-                                                if len(indices) > 0:
-                                                    bounding_boxes['ssd'] = bb[indices]
-                                                    labels['ssd'] = l[indices]
-                                                    class_scores['ssd'] = cl_sc[indices]
-                                                    if not vanilla:
-                                                        labels['ssd'] = np.argmax(class_scores['ssd'][:, 1:], 1)
-                                            if 'frcnn' in detectors_names and len(frcnn_full_detections[j][1]) > 0:
-                                                bb = frcnn_full_detections[j][1]
-                                                l = frcnn_full_detections[j][2]
-                                                cl_sc = frcnn_full_detections[j][3]
-                                                scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
-                                                indices = np.where(scores > select_threshold['frcnn'])[0]
-                                                if len(indices) > 0:
-                                                    bounding_boxes['frcnn'] = bb[indices]
-                                                    labels['frcnn'] = l[indices]
-                                                    class_scores['frcnn'] = cl_sc[indices]
-                                                    if not vanilla:
-                                                        labels['frcnn'] = np.argmax(class_scores['frcnn'][:, 1:], 1)
-                                            if 'denet' in detectors_names and len(denet_full_detections[j][1]) > 0:
-                                                bb = denet_full_detections[j][1]
-                                                l = denet_full_detections[j][2]
-                                                cl_sc = denet_full_detections[j][3]
-                                                scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
-                                                indices = np.where(scores > select_threshold['denet'])[0]
-                                                if len(indices) > 0:
-                                                    bounding_boxes['denet'] = bb[indices]
-                                                    labels['denet'] = l[indices]
-                                                    class_scores['denet'] = cl_sc[indices]
-                                                    if not vanilla:
-                                                        labels['denet'] = np.argmax(class_scores['denet'][:, 1:], 1)
+                                        if 'ssd' in bounding_boxes or 'denet' in bounding_boxes or 'frcnn' in bounding_boxes:
+                                            bounding_boxes, labels, class_scores, _ = ensemble.ensemble_result(bounding_boxes, class_scores,
+                                                                                                      ensemble.thresholds)
 
-                                            if 'ssd' in bounding_boxes or 'denet' in bounding_boxes or 'frcnn' in bounding_boxes:
-                                                bounding_boxes, labels, class_scores, _ = ensemble.ensemble_result(bounding_boxes, class_scores,
-                                                                                                          ensemble.thresholds)
+                                            scores = np.concatenate(class_scores[:, 1:])
+                                            bounding_boxes = np.concatenate(
+                                                np.stack([bounding_boxes] * 20, axis=1))
+                                            labels = np.concatenate([range(20)] * len(labels))
+                                            class_scores = np.concatenate(
+                                                np.stack([class_scores] * 20, axis=1))
 
-                                                if unique == '':
+                                            indices = np.where(scores > 0.01)[0]
+                                            bounding_boxes = bounding_boxes[indices]
+                                            labels = labels[indices]
+                                            class_scores = class_scores[indices]
+                                            scores = scores[indices]
 
-                                                    scores = np.concatenate(class_scores[:, 1:])
-                                                    bounding_boxes = np.concatenate(
-                                                        np.stack([bounding_boxes] * 20, axis=1))
-                                                    labels = np.concatenate([range(20)] * len(labels))
-                                                    class_scores = np.concatenate(
-                                                        np.stack([class_scores] * 20, axis=1))
+                                            # scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
-                                                    indices = np.where(scores > 0.01)[0]
-                                                    bounding_boxes = bounding_boxes[indices]
-                                                    labels = labels[indices]
-                                                    class_scores = class_scores[indices]
-                                                    scores = scores[indices]
+                                            labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(
+                                                labels, scores, bounding_boxes, class_scores,
+                                                class_scores, None,
+                                                nms_threshold=0.5)
+                                        else:
+                                            bounding_boxes = np.array([])
+                                            labels = np.array([])
+                                            class_scores = np.array([])
+                                            scores = np.array([])
 
-                                                else:
+                                        time_count += 1
 
-                                                    scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
+                                        full_detections.append((imagename, bounding_boxes, labels, class_scores))
+                                        if len(class_scores) > 0:
+                                            rscores = scores
+                                            # img = read_one_image('/home/yulia/PycharmProjects/PASCAL VOC/VOC2007 test/VOC2007/JPEGImages/' + imagename)
+                                            # visualization.plt_bboxes(img, labels, class_scores, bounding_boxes)
+                                            for i in range(len(labels)):
+                                                label = labels[i]
+                                                xmin = bounding_boxes[i, 0]
+                                                ymin = bounding_boxes[i, 1]
+                                                xmax = bounding_boxes[i, 2]
+                                                ymax = bounding_boxes[i, 3]
+                                                result = '{imagename} {rclass} {rscore} {xmin} {ymin} {xmax} {ymax}\n'.format(
+                                                    imagename=imagename, rclass=classnames[label],
+                                                    rscore=rscores[i], xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
+                                                print(str(j) + '/' + str(len(denet_full_detections)), result)
+                                                f.write(result)
+                                    f.close()
+                                    with open(cross_validation_ensemble_full_detections_filename, 'wb') as f:
+                                        pickle.dump(full_detections, f)
 
-                                                labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(
-                                                    labels, scores, bounding_boxes, class_scores,
-                                                    class_scores, None,
-                                                    nms_threshold=0.5)
+                                b = datetime.datetime.now()
+                                total_time += (b - a).seconds
 
-                                                # bounding_boxes, labels, class_scores = alfa.ALFA_result(bounding_boxes,
-                                                #                                                         class_scores,
-                                                #                                                         IOU_THRESHOLD,
-                                                #                                                         IOU_POWER,
-                                                #                                                         ENSEMBLE_BOUNDING_BOX,
-                                                #                                                         ENSEMBLE_SCORES,
-                                                #                                                         ADD_EMPTY_DETECTIONS,
-                                                #                                                         EMPTY_EPSILON,
-                                                #                                                         True,
-                                                #                                                         'LABEL',
-                                                #                                                         True,
-                                                #                                                         True,
-                                                #                                                         True)
+                                imagenames = read_imagenames(cross_validation_ensemble_imagenames_filename, images_dir)
+                                annotations = read_annotations(cross_validation_ensemble_pickled_annotations_filename,
+                                                               annotations_dir, imagenames, dataset_name)
 
-                                                scores = np.array(
-                                                    [class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
+                                _, mAP, _ = map_computation.compute_map(dataset_name, dataset_dir, imagenames,
+                                                                        annotations,
+                                                                        full_detections, 0.5)
 
-                                            else:
-                                                bounding_boxes = np.array([])
-                                                labels = np.array([])
-                                                class_scores = np.array([])
-                                                scores = np.array([])
+                                # _, mAP, _ = map_computation.compute_map(dataset_name, images_dir, annotations_dir, cache_dir, cross_validation_ensemble_imagenames_filename,
+                                #                             cross_validation_ensemble_annotations_filename, cross_validation_ensemble_pickled_annotations_filename,
+                                #                             cross_validation_ensemble_detections_filename, cross_validation_ensemble_full_detections_filename)
+                                print('mAP:', mAP)
+                                print('Average ensemble time: ', float(total_time) / time_count)
 
-                                            time_count += 1
-
-                                            full_detections.append((imagename, bounding_boxes, labels, class_scores))
-                                            if len(class_scores) > 0:
-                                                rscores = scores
-                                                # img = read_one_image('/home/yulia/PycharmProjects/PASCAL VOC/VOC2012 test/VOC2012/JPEGImages/' + imagename)
-                                                # visualization.plt_bboxes(img, labels, class_scores, bounding_boxes)
-                                                for i in range(len(labels)):
-                                                    label = labels[i]
-                                                    xmin = bounding_boxes[i, 0]
-                                                    ymin = bounding_boxes[i, 1]
-                                                    xmax = bounding_boxes[i, 2]
-                                                    ymax = bounding_boxes[i, 3]
-                                                    result = '{imagename} {rclass} {rscore} {xmin} {ymin} {xmax} {ymax}\n'.format(
-                                                        imagename=imagename, rclass=classnames[label],
-                                                        rscore=rscores[i], xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
-                                                    print(str(j) + '/' + str(len(denet_full_detections)), result)
-                                                    f.write(result)
-                                        f.close()
-                                        with open(cross_validation_ensemble_full_detections_filename, 'wb') as f:
-                                            pickle.dump(full_detections, f)
-
-                                    b = datetime.datetime.now()
-                                    total_time += (b - a).seconds
-
-                                    imagenames = read_imagenames(cross_validation_ensemble_imagenames_filename, images_dir)
-                                    annotations = read_annotations(cross_validation_ensemble_pickled_annotations_filename,
-                                                                   annotations_dir, imagenames, dataset_name)
-
-                                    _, mAP, _ = map_computation.compute_map(dataset_name, dataset_dir, imagenames, annotations,
-                                                                            full_detections, 0.5)
-
-                                    # _, mAP, _ = map_computation.compute_map(dataset_name, images_dir, annotations_dir, cache_dir, cross_validation_ensemble_imagenames_filename,
-                                    #                             cross_validation_ensemble_annotations_filename, cross_validation_ensemble_pickled_annotations_filename,
-                                    #                             cross_validation_ensemble_detections_filename, cross_validation_ensemble_full_detections_filename)
-                                    # print('mAP:', mAP)
-                                    print('Average ensemble time: ', float(total_time) / time_count)
-
-                                    print('\n\n')
+                                print('\n\n')
 
 
 ens = ObjectDetectionEnsemble()
@@ -594,7 +540,5 @@ cache_dir = './'
 cross_validate_ensemble_parameters(ens, map_computation)
 
 # unique 3 detectors mAP = 0.85474512630586064 not best parameters (parameters for 2 detectors were used) SAME_LABELS_ONLY=False
-# ('Average ensemble time: ', 0.1421647819063005)
 
 # unique 3 detectors mAP = 0.85464642388164747 not best parameters (parameters for 2 detectors were used) SAME_LABELS_ONLY=True
-# ('Average ensemble time: ', 0.1425686591276252)
