@@ -6,20 +6,22 @@ from NMS import bboxes_nms
 
 
 class Object:
-    def __init__(self, detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method, class_scores_fusion_method,
+    def __init__(self, all_detectors_names, detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method, class_scores_fusion_method,
                  add_empty_detections, empty_epsilon, confidence_style):
+
         self.bounding_box_fusion_method = bounding_box_fusion_method
         self.class_scores_fusion_method = class_scores_fusion_method
         self.add_empty_detections = add_empty_detections
         self.empty_epsilon = empty_epsilon
         self.confidence_style = confidence_style
-        self.detectors_names = detectors_names
+        self.detectors_names = all_detectors_names
 
         self.number_of_classes = len(class_scores[0]) if len(class_scores) > 0 else 0
         self.bounding_boxes = bounding_boxes
-        self.class_scores = class_scores
+        self.class_scores = list(class_scores)
         self.detected_by = detectors_names
-        self.epsilon = 1e-9
+        self.epsilon = 0.0
+        self.finalized = False
 
 
     def get_final_bounding_box(self):
@@ -45,6 +47,7 @@ class Object:
 
 
     def multiply_scores(self):
+        # print(self.np_class_scores[:self.effective_scores][:, 0::5])
         temp = np.prod(np.clip(self.np_class_scores[:self.effective_scores], a_min=self.epsilon, a_max=None), axis=0)
         return temp/np.sum(temp)
 
@@ -83,6 +86,9 @@ class Object:
             print('Unknown value for confidence_style ' + self.confidence_style + '. Using LABEL')
             self.np_scores = np.amax(self.np_class_scores[:, 1:], axis=1)
 
+        self.finalized = True
+
+
     def max_bounding_box(self):
         lx = np.amin(self.np_bounding_boxes[:, 0])
         ly = np.amin(self.np_bounding_boxes[:, 1])
@@ -115,7 +121,8 @@ class Object:
 
 
     def get_object(self):
-        self.finalize(self.detectors_names)
+        if not self.finalized:
+            self.finalize(self.detectors_names)
         if len(self.class_scores) > 0:
             if self.add_empty_detections:
                 self.effective_scores = len(self.np_scores)
@@ -136,13 +143,17 @@ class ALFA:
         self.bc = bbox_clustering.BoxClustering()
 
 
-    def ALFA_result(self, detectors_bounding_boxes, detectors_class_scores, tau, gamma, bounding_box_fusion_method,
+    def ALFA_result(self, all_detectors_names, detectors_bounding_boxes, detectors_class_scores, tau, gamma, bounding_box_fusion_method,
                         class_scores_fusion_method, add_empty_detections, empty_epsilon, same_labels_only,
                         confidence_style, use_BC, max_1_box_per_detector, single):
         """
         ALFA algorithm
 
         ----------
+        all_detectors_names : list
+            Detectors names, that sholud have taken or have taken part in fusion. For e.g. ['ssd', 'denet', 'frcnn']
+            even if 'ssd' didn't detect object.
+
         detectors_bounding_boxes : dict
             Dictionary, where keys are detector's names and values are numpy arrays of detector's bounding boxes.
 
@@ -231,7 +242,7 @@ class ALFA:
 
         objects = []
         for i in range(0, len(objects_boxes)):
-            objects.append(Object(objects_detector_names[i],
+            objects.append(Object(all_detectors_names, objects_detector_names[i],
                        objects_boxes[i],
                        objects_class_scores[i], bounding_box_fusion_method, class_scores_fusion_method,
                        add_empty_detections, empty_epsilon, confidence_style))
@@ -263,7 +274,6 @@ class ALFA:
             class_scores = class_scores[indices]
             scores = scores[indices]
         else:
-
             scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
         labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(

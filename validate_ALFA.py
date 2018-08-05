@@ -89,7 +89,8 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
                     class_scores[key] = cl_sc[indices]
 
         if bounding_boxes != {}:
-            bounding_boxes, labels, class_scores = alfa.ALFA_result(bounding_boxes, class_scores,
+            bounding_boxes, labels, class_scores = alfa.ALFA_result(detectors_full_detections.keys(),
+                                                                    bounding_boxes, class_scores,
                                                                     alfa_parameters_dict['tau'][0],
                                                                     alfa_parameters_dict['gamma'][0],
                                                                     alfa_parameters_dict['bounding_box_fusion_method'][0],

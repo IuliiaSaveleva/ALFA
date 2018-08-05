@@ -6,7 +6,7 @@ import os
 
 from reading_methods import dataset_classnames, read_imagenames, read_annotations
 from map_computation import Computation_mAP
-import bbox_clustering_another_version_4 as bbox_clustering
+import bbox_clustering as bbox_clustering
 from ALFA import ALFA
 from NMS import bboxes_nms
 # import tensorflow as tf
@@ -42,8 +42,7 @@ vanilla = True
 detectors_names = ['ssd', 'denet']
 select_threshold = {
     'ssd': 0.05,
-    'denet': 0.05,
-    'frcnn': 0.05
+    'denet': 0.05
 }
 
 add_empty_detections_values = [True]
@@ -55,15 +54,6 @@ iou_threshold_values = [0.4833061430649309]
 iou_power_values = [0.2171683854488066]
 empty_epsilon_values = [0.557035919458682]
 same_labels_only_values = [True]
-
-# add_empty_detections_values = [True]
-# confidence_style_values = ['LABEL']
-# ensemble_bounding_box_values = ['WEIGHTED_AVERAGE_FINAL_LABEL']
-# ensemble_scores_values = ['MULTIPLY']
-# iou_threshold_values = [0.4833061430649309]
-# iou_power_values = [0.2171683854488066]
-# empty_epsilon_values = [0.557035919458682]
-# same_labels_only_values = [True]
 
 # add_empty_detections_values = [True]
 # confidence_style_values = ['LABEL']
@@ -126,6 +116,7 @@ class Object:
         return np.average(self.np_class_scores[:self.effective_scores], axis=0)
 
     def multiply_scores(self):
+        # print(self.np_class_scores[:self.effective_scores][:, 0::5])
         temp = np.prod(np.clip(self.np_class_scores[:self.effective_scores], a_min=self.epsilon, a_max=None), axis=0)
         return temp/np.sum(temp)
         # return temp
@@ -303,9 +294,17 @@ class ObjectDetectionEnsemble:
                                     times_used[old_detector_name][old_bb] += 1
             old_detectors.append(detector_name)
         """
-        bc = bbox_clustering.BoxClustering(bounding_boxes = bounding_boxes, class_scores = class_scores, hard_threshold=IOU_THRESHOLD, power_iou=IOU_POWER, same_labels_only=SAME_LABELS_ONLY, silent = True)
-        object_boxes, object_detector_names, object_class_scores = bc.get_raw_candidate_objects()
-        
+        # bc = bbox_clustering.BoxClustering(bounding_boxes = bounding_boxes, class_scores = class_scores, hard_threshold=IOU_THRESHOLD, power_iou=IOU_POWER, same_labels_only=SAME_LABELS_ONLY, silent = True)
+        # object_boxes, object_detector_names, object_class_scores = bc.get_raw_candidate_objects()
+        bc = bbox_clustering.BoxClustering()
+        object_boxes, object_detector_names, object_class_scores = bc.get_raw_candidate_objects(bounding_boxes = bounding_boxes,
+                                                                                                class_scores = class_scores,
+                                                                                                tau=IOU_THRESHOLD,
+                                                                                                gamma=IOU_POWER,
+                                                                                                same_labels_only=SAME_LABELS_ONLY,
+                                                                                                use_BC=True,
+                                                                                                max_1_box_per_detector=True)
+
         for i in range(0, len(object_boxes)):
             number_of_boxes = len(object_boxes[i])
             objects.append(
@@ -335,6 +334,10 @@ class ObjectDetectionEnsemble:
         ensemble_bounding_boxes = np.array(ensemble_bounding_boxes)
         ensemble_class_scores = np.array(ensemble_class_scores)
         ensemble_labels = np.array(ensemble_labels)
+
+        # print(ensemble_labels)
+        # print(ensemble_class_scores[:, 0::5])
+
         # for i in range(0, len(ensemble_labels)):
         #     print(max(ensemble_class_scores[i][1:]))
         # with open('times_used_info' + str(datetime.datetime.now()) + '.p', 'wb') as f:
@@ -366,10 +369,9 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
     global EMPTY_EPSILON
     global SAME_LABELS_ONLY
 
-    cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_imagenames.txt')
-    cross_validation_ensemble_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/ssd_annotations.txt')
+    cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/imagenames_2007_test.txt')
     cross_validation_ensemble_pickled_annotations_filename = os.path.join(cache_dir,
-                                                                  'PASCAL_VOC_files/ssd_annots.pkl')
+                                                                  'PASCAL_VOC_files/annots_2007_test.pkl')
     cross_validation_ensemble_detections_filename = os.path.join(cache_dir,
                             '_'.join(detectors_names) + unique + '_ensemble_fast_detections_2007_test1.txt')
     cross_validation_ensemble_full_detections_filename = os.path.join(cache_dir,
@@ -383,12 +385,6 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
         with open(ssd_imagenames_filename, 'r') as f:
             content = f.read()
         with open(cross_validation_ensemble_imagenames_filename, 'w') as f:
-            f.write(content)
-
-    if not os.path.exists(cross_validation_ensemble_annotations_filename):
-        with open(ssd_annotations_filename, 'r') as f:
-            content = f.read()
-        with open(cross_validation_ensemble_annotations_filename, 'w') as f:
             f.write(content)
 
     if not os.path.exists(cross_validation_ensemble_pickled_annotations_filename):
@@ -490,6 +486,7 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
                                                         labels['denet'] = np.argmax(class_scores['denet'][:, 1:], 1)
 
                                             if 'ssd' in bounding_boxes or 'denet' in bounding_boxes or 'frcnn' in bounding_boxes:
+
                                                 bounding_boxes, labels, class_scores, _ = ensemble.ensemble_result(bounding_boxes, class_scores,
                                                                                                           ensemble.thresholds)
 
@@ -509,7 +506,6 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
                                                     scores = scores[indices]
 
                                                 else:
-
                                                     scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
                                                 labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(
@@ -556,7 +552,7 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
                                                     result = '{imagename} {rclass} {rscore} {xmin} {ymin} {xmax} {ymax}\n'.format(
                                                         imagename=imagename, rclass=classnames[label],
                                                         rscore=rscores[i], xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
-                                                    print(str(j) + '/' + str(len(denet_full_detections)), result)
+                                                    # print(str(j) + '/' + str(len(denet_full_detections)), result)
                                                     f.write(result)
                                         f.close()
                                         with open(cross_validation_ensemble_full_detections_filename, 'wb') as f:

@@ -336,9 +336,8 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
     global EMPTY_EPSILON
 
     cross_validation_ensemble_imagenames_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/imagenames_2007_test.txt')
-    cross_validation_ensemble_annotations_filename = os.path.join(cache_dir, 'PASCAL_VOC_files/annots_2007_test.txt')
     cross_validation_ensemble_pickled_annotations_filename = os.path.join(cache_dir,
-                                                                  'PASCAL_VOC_files/ssd_annots.pkl')
+                                                                  'PASCAL_VOC_files/annots_2007_test.pkl')
     cross_validation_ensemble_detections_filename = os.path.join(cache_dir,
                             '_'.join(detectors_names) + '_validation_ensemble_detections.txt')
     cross_validation_ensemble_full_detections_filename = os.path.join(cache_dir,
@@ -354,12 +353,6 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
         with open(cross_validation_ensemble_imagenames_filename, 'w') as f:
             f.write(content)
 
-    if not os.path.exists(cross_validation_ensemble_annotations_filename):
-        with open(ssd_annotations_filename, 'r') as f:
-            content = f.read()
-        with open(cross_validation_ensemble_annotations_filename, 'w') as f:
-            f.write(content)
-
     if not os.path.exists(cross_validation_ensemble_pickled_annotations_filename):
         with open(ssd_pickled_annotations_filename, 'rb') as f:
             content = pickle.load(f)
@@ -367,14 +360,11 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
             pickle.dump(content, f)
 
     ssd_full_detections_filename = os.path.join(cache_dir, 'SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
-    yolo_full_detections_filename = os.path.join(cache_dir, 'yolo_results/yolo_0.01_full_detections.pkl')
     frcnn_full_detections_filename = os.path.join(cache_dir, 'Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
     denet_full_detections_filename = os.path.join(cache_dir, 'DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
 
     with open(ssd_full_detections_filename, 'rb') as f:
         ssd_full_detections = pickle.load(f)
-    # with open(yolo_full_detections_filename, 'rb') as f:
-    #     yolo_full_detections = pickle.load(f)
     with open(frcnn_full_detections_filename, 'rb') as f:
         frcnn_full_detections = pickle.load(f)
     with open(denet_full_detections_filename, 'rb') as f:
@@ -460,20 +450,20 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
                                             bounding_boxes, labels, class_scores, _ = ensemble.ensemble_result(bounding_boxes, class_scores,
                                                                                                       ensemble.thresholds)
 
-                                            scores = np.concatenate(class_scores[:, 1:])
-                                            bounding_boxes = np.concatenate(
-                                                np.stack([bounding_boxes] * 20, axis=1))
-                                            labels = np.concatenate([range(20)] * len(labels))
-                                            class_scores = np.concatenate(
-                                                np.stack([class_scores] * 20, axis=1))
+                                            # scores = np.concatenate(class_scores[:, 1:])
+                                            # bounding_boxes = np.concatenate(
+                                            #     np.stack([bounding_boxes] * 20, axis=1))
+                                            # labels = np.concatenate([range(20)] * len(labels))
+                                            # class_scores = np.concatenate(
+                                            #     np.stack([class_scores] * 20, axis=1))
+                                            #
+                                            # indices = np.where(scores > 0.01)[0]
+                                            # bounding_boxes = bounding_boxes[indices]
+                                            # labels = labels[indices]
+                                            # class_scores = class_scores[indices]
+                                            # scores = scores[indices]
 
-                                            indices = np.where(scores > 0.01)[0]
-                                            bounding_boxes = bounding_boxes[indices]
-                                            labels = labels[indices]
-                                            class_scores = class_scores[indices]
-                                            scores = scores[indices]
-
-                                            # scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
+                                            scores = np.array([class_scores[i, 1:][labels[i]] for i in range(len(class_scores))])
 
                                             labels, scores, bounding_boxes, class_scores, _ = bboxes_nms(
                                                 labels, scores, bounding_boxes, class_scores,
@@ -510,6 +500,7 @@ def cross_validate_ensemble_parameters(ensemble, map_computation):
                                 b = datetime.datetime.now()
                                 total_time += (b - a).seconds
 
+                                imagenames = read_imagenames(cross_validation_ensemble_imagenames_filename, images_dir)
                                 imagenames = read_imagenames(cross_validation_ensemble_imagenames_filename, images_dir)
                                 annotations = read_annotations(cross_validation_ensemble_pickled_annotations_filename,
                                                                annotations_dir, imagenames, dataset_name)
