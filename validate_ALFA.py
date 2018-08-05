@@ -72,6 +72,8 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
 
     print('Running ALFA on dataset...')
 
+    param_idx = alfa_parameters_dict['main_fold']
+
     a = datetime.datetime.now()
     for j in range(len(detectors_full_detections[0])):
         imagename = detectors_full_detections[0][j][0]
@@ -95,16 +97,16 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
         if bounding_boxes != {}:
             bounding_boxes, labels, class_scores = alfa.ALFA_result(detectors_full_detections.keys(),
                                                                     bounding_boxes, class_scores,
-                                                                    alfa_parameters_dict['tau'][0],
-                                                                    alfa_parameters_dict['gamma'][0],
-                                                                    alfa_parameters_dict['bounding_box_fusion_method'][0],
-                                                                    alfa_parameters_dict['class_scores_fusion_method'][0],
-                                                                    alfa_parameters_dict['add_empty_detections'][0],
-                                                                    alfa_parameters_dict['epsilon'][0],
-                                                                    alfa_parameters_dict['same_labels_only'][0],
-                                                                    alfa_parameters_dict['confidence_style'][0],
-                                                                    alfa_parameters_dict['use_BC'][0],
-                                                                    alfa_parameters_dict['max_1_box_per_detector'][0],
+                                                                    alfa_parameters_dict['tau'][param_idx],
+                                                                    alfa_parameters_dict['gamma'][param_idx],
+                                                                    alfa_parameters_dict['bounding_box_fusion_method'][param_idx],
+                                                                    alfa_parameters_dict['class_scores_fusion_method'][param_idx],
+                                                                    alfa_parameters_dict['add_empty_detections'][param_idx],
+                                                                    alfa_parameters_dict['epsilon'][param_idx],
+                                                                    alfa_parameters_dict['same_labels_only'][param_idx],
+                                                                    alfa_parameters_dict['confidence_style'][param_idx],
+                                                                    alfa_parameters_dict['use_BC'][param_idx],
+                                                                    alfa_parameters_dict['max_1_box_per_detector'][param_idx],
                                                                     alfa_parameters_dict['single'])
             time_count += 1
         else:
