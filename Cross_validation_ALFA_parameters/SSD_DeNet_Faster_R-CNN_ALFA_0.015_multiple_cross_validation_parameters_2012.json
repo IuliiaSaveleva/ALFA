@@ -1,11 +1,12 @@
 {
   "detections_filenames": [
-    "./SSD_detections/SSD_ovthresh_0.015_multiple_detections_PASCAL_VOC_2012_test.pkl",
-    "./DeNet_detections/DeNet_ovthresh_0.015_multiple_detections_PASCAL_VOC_2012_test.pkl",
-    "./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_multiple_detections_PASCAL_VOC_2012_test.pkl"
+    "./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl",
+    "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl",
+    "./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl"
   ],
   "single": false,
   "select_threshold": 0.015,
+  "main_fold": 1,
   "tau": [
     0.4484444201087372,
     0.7423624085485172,

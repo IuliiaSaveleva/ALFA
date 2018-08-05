@@ -6,6 +6,7 @@
   ],
   "single": true,
   "select_threshold": 0.015,
+  "main_fold": 0,
   "tau": [
     0.7520381588802675,
     0.7520381588802675,

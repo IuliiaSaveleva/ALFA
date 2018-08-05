@@ -9,9 +9,8 @@ dataset_classnames = {
                    'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor'],
 }
 
-# можно менять вот эти 2 строчки, должно работать :)
-full_detections_filename = './ssd_denet_frcnn_2012.pkl'
-submission_folder = './ssd_denet_frcnn_2012'
+full_detections_filename = './ssd_denet_frcnn_0.015_2012.pkl'
+submission_folder = './ssd_denet_frcnn_0.015_2012'
 
 if os.path.exists(submission_folder):
     shutil.rmtree(submission_folder)
