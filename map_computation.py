@@ -130,6 +130,20 @@ class Computation_mAP:
 
         recs = annotations
 
+        annotated_images = []
+        for imagename in imagenames:
+            if imagename in recs:
+                annotated_images.append(imagename)
+
+        imagenames = annotated_images
+
+        if weighted_map:
+            annotated_full_images = []
+            for imagename in full_imagenames:
+                if imagename in recs:
+                    annotated_full_images.append(imagename)
+            full_imagenames = annotated_full_images
+
         pr_curves = {}
 
         aps = []
@@ -184,6 +198,8 @@ class Computation_mAP:
             tp = np.zeros(nd)
             fp = np.zeros(nd)
             for d in range(nd):
+                if image_ids[d] not in class_recs:
+                    continue
                 R = class_recs[image_ids[d]]
                 bb = BB[d, :].astype(float)
                 ovmax = -np.inf

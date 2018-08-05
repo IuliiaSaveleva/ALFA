@@ -1,0 +1,78 @@
+{
+    "detections_filenames": [
+    "./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl",
+    "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl"
+  ],
+  "single": true,
+  "select_threshold": 0.05,
+  "tau": [
+    0.4833061430649309,
+    0.45587675111240133,
+    0.4833061430649309,
+    0.4833061430649309,
+    0.34109127588548305
+  ],
+  "gamma": [
+    0.2171683854488066,
+    0.30209940216063647,
+    0.2171683854488066,
+    0.2171683854488066,
+    0.9080291528554802
+  ],
+  "bounding_box_fusion_method": [
+    "WEIGHTED AVERAGE FINAL LABEL",
+    "WEIGHTED AVERAGE",
+    "WEIGHTED AVERAGE FINAL LABEL",
+    "WEIGHTED AVERAGE FINAL LABEL",
+    "WEIGHTED AVERAGE"
+  ],
+  "class_scores_fusion_method": [
+    "MULTIPLY",
+    "MULTIPLY",
+    "MULTIPLY",
+    "MULTIPLY",
+    "MULTIPLY"
+  ],
+  "epsilon":[
+    0.557035919458682,
+    0.3154446743607744,
+    0.557035919458682,
+    0.557035919458682,
+    0.29491359119917887
+  ],
+  "same_labels_only": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "add_empty_detections":[
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "confidence_style": [
+    "LABEL",
+    "LABEL",
+    "LABEL",
+    "LABEL",
+    "LABEL"
+  ],
+  "use_BC": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "max_1_box_per_detector": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ]
+}

@@ -1,42 +1,64 @@
 # (c) Evgeny Razinkov, Kazan Federal University, 2017
-import os
-import pickle
-import random
 # import pyximport
 # pyximport.install()
 import datetime
-import math
+import pickle
 
+from computation_map import Computation_mAP
 
-import numpy as np
+from ssd_detector_module.sdd_detector import *
+
 # import tensorflow as tf
 # import matplotlib.pyplot as plt
 # import ssd
 # import yolo2
 # import faster_rcnn
-from ssd_lib_razinkov import *
-from read_image import read_one_image
 
-from ssd_detector_module.sdd_detector import *
-from ssd_detector_module.notebooks import visualization
-from map_computation import Computation_mAP
+# unique = ''
+# prefix = unique
+# clear_files = True
+# #n_values = [22., 14., 30., 0., 8., 34., 12., 0., 6., 24., 6., 0., 12., 24., 0., 4., 0., 4., 0., 0.]
+# best_n = 18.0
+# detectors_names_list = ['ssd', 'denet', 'frcnn']
 
+unique = ''
+prefix = unique
+clear_files = False
+# n_values = [78., 10., 28., 28., 92., 10., 54., 12., 30., 4., 10., 86., 10., 24., 24., 4., 16., 72., 104., 26.]
+best_n = 16.0
 detectors_names_list = ['ssd', 'denet']
+
+# unique = '_unique'
+# prefix = unique
+# clear_files = True
+# # n_values = [26., 14., 64., 10., 4., 54., 12., 12., 16., 14., 6., 66., 42., 14., 0., 4., 64., 4., 64., 0.]
+# best_n = 14.0
+# detectors_names_list = ['ssd', 'denet', 'frcnn']
+
+# unique = '_unique'
+# prefix = unique
+# clear_files = False
+# # n_values = [64., 50., 58., 46., 84., 90., 102., 12., 66., 4., 10., 98., 10., 52., 94., 4., 16., 36., 102., 36.]
+# best_n = 16.0
+# detectors_names_list = ['ssd', 'denet']
+
+
+
 class DynamicBeliefFusion:
     def __init__(self):
 
         self.epsilon = 0.0001
 
         self.dataset_name = 'PASCAL VOC'
-        self.dataset_dir = '/home/yulia/PycharmProjects/VOC2007 test/VOC2007/'
+        self.dataset_dir = '/home/yulia/PycharmProjects/VOC2012 test/VOC2012/'
         self.annotations_dir = os.path.join(self.dataset_dir, 'Annotations/')
         self.images_dir = os.path.join(self.dataset_dir, 'JPEGImages/')
         self.cache_dir = './'
         self.classnames = dataset_classnames[self.dataset_name]
 
-        self.ssd_info_filename = os.path.join(self.cache_dir, 'dbf_results/pr_curves/1original_ssd_info.pkl')
-        self.denet_info_filename = os.path.join(self.cache_dir, 'dbf_results/pr_curves/1denet_info.pkl')
-        self.frcnn_info_filename = os.path.join(self.cache_dir, 'dbf_results/pr_curves/1frcnn_info.pkl')
+        self.ssd_info_filename = os.path.join(self.cache_dir, 'dbf_results/pr_curves/' + prefix + '_original_ssd_info.pkl')
+        self.denet_info_filename = os.path.join(self.cache_dir, 'dbf_results/pr_curves/' + prefix + '_denet_info.pkl')
+        self.frcnn_info_filename = os.path.join(self.cache_dir, 'dbf_results/pr_curves/' + prefix + '_frcnn_info.pkl')
 
         self.prepare_files()
 
@@ -92,48 +114,49 @@ class DynamicBeliefFusion:
 
     def prepare_files(self):
 
-        self.dbf_validation_imagenames_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_validation__imagenames.txt')
-        self.dbf_validation_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_validation_annotations.txt')
-        self.dbf_validation_pickled_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_validation_annots.pkl')
-        self.dbf_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_' + '_'.join(detectors_names_list) + '_validation_detections.txt')
-        self.dbf_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_' + '_'.join(detectors_names_list) + '_validation_full_detections.pkl')
+        self.dbf_validation_imagenames_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_dbf_validation_imagenames.txt')
+        self.dbf_validation_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_dbf_validation_annotations.txt')
+        self.dbf_validation_pickled_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_dbf_validation_annots.pkl')
+        self.dbf_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix +  '_'.join(detectors_names_list) + '_dbf_validation_detections_2012_test.txt')
+        self.dbf_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' +prefix + '_'.join(detectors_names_list) + '_dbf_validation_full_detections_2012_test.pkl')
 
-        self.dbf_test_imagenames_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_test_imagenames.txt')
-        self.dbf_test_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_test_annotations.txt')
-        self.dbf_test_pickled_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_test_annots.pkl')
-        self.dbf_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_' + '_'.join(detectors_names_list) + '_test_detections.txt')
-        self.dbf_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1dbf_' + '_'.join(detectors_names_list) + '_test_full_detections.pkl')
+        self.dbf_test_imagenames_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_dbf_test_imagenames.txt')
+        self.dbf_test_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_dbf_test_annotations.txt')
+        self.dbf_test_pickled_annotations_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_dbf_test_annots.pkl')
+        self.dbf_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_'.join(detectors_names_list) + '_dbf_test_detections_2012_test.txt')
+        self.dbf_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_'.join(detectors_names_list) + '_dbf_test_full_detections_2012_test.pkl')
 
         ssd_imagenames_filename = os.path.join(self.cache_dir, 'ssd_results/ssd_imagesnames.txt')
         ssd_annotations_filename = os.path.join(self.cache_dir, 'ssd_results/ssd_annotations.txt')
         ssd_pickled_annotations_filename = os.path.join(self.cache_dir, 'ssd_results/ssd_annots.pkl')
 
-        ssd_detections_filename = os.path.join(self.cache_dir, 'original_ssd_results/original_ssd_trully_0.015_vanilla_unique_detections.txt')
-        denet_detections_filename = os.path.join(self.cache_dir, 'denet_results/denet_0.015_vanilla_unique_detections.txt')
-        frcnn_detections_filename = os.path.join(self.cache_dir, 'frcnn_results/frcnn_0.015_vanilla_unique_detections.txt')
+        ssd_detections_filename = os.path.join(self.cache_dir, 'original_ssd_results/original_ssd_trully_0.015_vanilla' + unique + '_detections.txt')
+        denet_detections_filename = os.path.join(self.cache_dir, 'denet_results/denet_0.015_vanilla' + unique + '_detections.txt')
+        frcnn_detections_filename = os.path.join(self.cache_dir, 'frcnn_results/frcnn_0.015_vanilla' + unique + '_detections.txt')
 
-        self.ssd_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1original_ssd_validation_detections.txt')
-        self.denet_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1denet_validation_detections.txt')
-        self.frcnn_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1frcnn_validation_detections.txt')
+        self.ssd_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_original_ssd_validation_detections_2012_test.txt')
+        self.denet_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_denet_validation_detections_2012_test.txt')
+        self.frcnn_validation_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_frcnn_validation_detections_2012_test.txt')
 
-        self.ssd_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1original_ssd_test_detections.txt')
-        self.denet_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1denet_test_detections.txt')
-        self.frcnn_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1frcnn_test_detections.txt')
+        self.ssd_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_original_ssd_test_detections_2012_test.txt')
+        self.denet_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_denet_test_detections_2012_test.txt')
+        self.frcnn_test_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_frcnn_test_detections_2012_test.txt')
 
-        self.ssd_full_detections_filename = os.path.join(self.cache_dir, 'original_ssd_results/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
-        self.denet_full_detections_filename = os.path.join(self.cache_dir, 'denet_results/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
-        self.frcnn_full_detections_filename = os.path.join(self.cache_dir, 'frcnn_results/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl')
+        self.ssd_full_detections_filename = os.path.join(self.cache_dir, 'original_ssd_results/original_ssd_trully_0.015_vanilla' + unique + '_full_detections_2012_test.pkl')
+        self.denet_full_detections_filename = os.path.join(self.cache_dir, 'denet_results/denet_0.015_vanilla' + unique + '_full_detections_2012_test.pkl')
+        self.frcnn_full_detections_filename = os.path.join(self.cache_dir, 'frcnn_results/frcnn_0.015_vanilla' + unique + '_full_detections_2012_test.pkl')
 
-        self.ssd_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1original_ssd_validation_full_detections.pkl')
-        self.denet_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1denet_validation_full_detections.pkl')
-        self.frcnn_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1frcnn_validation_full_detections.pkl')
+        self.ssd_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_original_ssd_validation_full_detections_2012_test.pkl')
+        self.denet_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_denet_validation_full_detections_2012_test.pkl')
+        self.frcnn_validation_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_frcnn_validation_full_detections_2012_test.pkl')
 
-        self.ssd_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1original_ssd_test_full_detections.pkl')
-        self.denet_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1denet_test_full_detections.pkl')
-        self.frcnn_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/1frcnn_test_full_detections.pkl')
+        self.ssd_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_original_ssd_test_full_detections_2012_test.pkl')
+        self.denet_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_denet_test_full_detections_2012_test.pkl')
+        self.frcnn_test_full_detections_filename = os.path.join(self.cache_dir, 'dbf_results/' + prefix + '_frcnn_test_full_detections_2012_test.pkl')
 
-        if os.path.exists(self.dbf_validation_imagenames_filename):
-            os.remove(self.dbf_validation_imagenames_filename)
+        if clear_files:
+            if os.path.exists(self.dbf_validation_imagenames_filename):
+                os.remove(self.dbf_validation_imagenames_filename)
 
         if not (os.path.exists(self.dbf_validation_imagenames_filename) and os.path.exists(self.dbf_test_imagenames_filename)
                 and os.path.exists(self.dbf_validation_annotations_filename) and os.path.exists(self.dbf_test_annotations_filename)
@@ -162,12 +185,10 @@ class DynamicBeliefFusion:
                 content = f.read()
             imagenames = content.split('\n')
             length = len(imagenames) - 1
-            # validaion_indices = random.sample(range(length), length // 2)
-            validaion_indices = []
-            test_indices = [i for i in range(length) if i not in validaion_indices]
-            validaion_indices = range(length)
-            validation_imagenames = [imagenames[i] for i in validaion_indices]
-            test_imagenames = [imagenames[i] for i in test_indices]
+            validation_imagenames = imagenames[:-1]
+            with open('./ssd_results/ssd_imagesnames_2012_test.txt') as f:
+                lines = f.readlines()
+            test_imagenames = [x.strip() for x in lines]
             with open(self.dbf_validation_imagenames_filename, 'w') as f:
                 f.write('\n'.join(validation_imagenames) + '\n')
             with open(self.dbf_test_imagenames_filename, 'w') as f:
@@ -176,8 +197,10 @@ class DynamicBeliefFusion:
             with open(ssd_annotations_filename, 'r') as f:
                 content = f.read()
             annotations = content.split('\n')
-            validation_annotations = [annotations[i] for i in validaion_indices]
-            test_annotations = [annotations[i] for i in test_indices]
+            validation_annotations = annotations
+            with open('./ssd_results/ssd_annotations_2012_test.txt') as f:
+                lines = f.readlines()
+            test_annotations = [x.strip() for x in lines]
             with open(self.dbf_validation_annotations_filename, 'w') as f:
                 f.write('\n'.join(validation_annotations) + '\n')
             with open(self.dbf_test_annotations_filename, 'w') as f:
@@ -187,10 +210,12 @@ class DynamicBeliefFusion:
             test_recs = {}
             with open(ssd_pickled_annotations_filename, 'rb') as f:
                 content = pickle.load(f)
+            with open('./ssd_results/ssd_annots_2012_test.pkl', 'rb') as f:
+                content_test = pickle.load(f)
             for validation_imagename in validation_imagenames:
                 validation_recs[validation_imagename] = content[validation_imagename]
-            for test_imagename in test_imagenames:
-                test_recs[test_imagename] = content[test_imagename]
+            # for test_imagename in test_imagenames:
+            #     test_recs[test_imagename] = content_test[test_imagename]
             with open(self.dbf_validation_pickled_annotations_filename, 'wb') as f:
                 pickle.dump(validation_recs, f)
             with open(self.dbf_test_pickled_annotations_filename, 'wb') as f:
@@ -217,13 +242,13 @@ class DynamicBeliefFusion:
                         validation_detections.append(detection)
                 with open(validation_detections_filename, 'w') as f:
                     f.write('\n'.join(validation_detections) + '\n')
-                test_detections = []
-                for i in range(len(detections)):
-                    detection = detections[i]
-                    if detection.split(' ')[0] in test_imagenames:
-                        test_detections.append(detection)
-                with open(test_detections_filename, 'w') as f:
-                    f.write('\n'.join(test_detections) + '\n')
+                # test_detections = []
+                # for i in range(len(detections)):
+                #     detection = detections[i]
+                #     if detection.split(' ')[0] in test_imagenames:
+                #         test_detections.append(detection)
+                # with open(test_detections_filename, 'w') as f:
+                #     f.write('\n'.join(test_detections) + '\n')
 
                 with open(full_detections_filename, 'rb') as f:
                     full_detections = pickle.load(f)
@@ -233,14 +258,14 @@ class DynamicBeliefFusion:
                         validation_full_detections.append(full_detection)
                 with open(validation_full_detections_filename, 'wb') as f:
                     pickle.dump(validation_full_detections, f)
-                test_full_detections = []
-                for full_detection in full_detections:
-                    if full_detection[0] in test_imagenames:
-                        test_full_detections.append(full_detection)
-                with open(test_full_detections_filename, 'wb') as f:
-                    pickle.dump(test_full_detections, f)
-
-                return test_full_detections
+                # test_full_detections = []
+                # for full_detection in full_detections:
+                #     if full_detection[0] in test_imagenames:
+                #         test_full_detections.append(full_detection)
+                # with open(test_full_detections_filename, 'wb') as f:
+                #     pickle.dump(test_full_detections, f)
+                # return test_full_detections
+                return None
 
             if 'ssd' in detectors_names_list:
                 self.ssd_test_full_detections = split_detections_validation_and_test(ssd_detections_filename, self.ssd_validation_detections_filename,
@@ -248,6 +273,10 @@ class DynamicBeliefFusion:
                                                                                      self.ssd_full_detections_filename,
                                                                                      self.ssd_validation_full_detections_filename,
                                                                                      self.ssd_test_full_detections_filename)
+                with open(self.ssd_test_full_detections_filename, 'wb') as f:
+                    with open(self.ssd_full_detections_filename, 'rb') as f1:
+                        self.ssd_test_full_detections = pickle.load(f1)
+                        pickle.dump(self.ssd_test_full_detections, f)
 
             if 'denet' in detectors_names_list:
                 self.denet_test_full_detections = split_detections_validation_and_test(denet_detections_filename, self.denet_validation_detections_filename,
@@ -255,6 +284,10 @@ class DynamicBeliefFusion:
                                                                                       self.denet_full_detections_filename,
                                                                                       self.denet_validation_full_detections_filename,
                                                                                       self.denet_test_full_detections_filename)
+                with open(self.denet_test_full_detections_filename, 'wb') as f:
+                    with open(self.denet_full_detections_filename, 'rb') as f1:
+                        self.denet_test_full_detections = pickle.load(f1)
+                        pickle.dump(self.denet_test_full_detections, f)
 
             if 'frcnn' in detectors_names_list:
                 self.frcnn_test_full_detections = split_detections_validation_and_test(frcnn_detections_filename, self.frcnn_validation_detections_filename,
@@ -262,6 +295,10 @@ class DynamicBeliefFusion:
                                                                                        self.frcnn_full_detections_filename,
                                                                                        self.frcnn_validation_full_detections_filename,
                                                                                        self.frcnn_test_full_detections_filename)
+                with open(self.frcnn_test_full_detections_filename, 'wb') as f:
+                    with open(self.frcnn_full_detections_filename, 'rb') as f1:
+                        self.frcnn_test_full_detections = pickle.load(f1)
+                        pickle.dump(self.frcnn_test_full_detections, f)
         else:
             if 'ssd' in detectors_names_list:
                 with open(self.ssd_test_full_detections_filename, 'rb') as f:
@@ -403,12 +440,6 @@ class DynamicBeliefFusion:
 
 
     def rescore_with_dbf(self, detection_vectors, labels, n):
-        # not unique 2 detectors
-        # n_values = [100., 10., 100., 90., 60., 80., 140., 70., 110., 40., 10., 190., 10., 70., 190., 20., 10., 140., 140., 50.]
-        # unique 2 detectors
-        # n_values = [30., 50., 90., 100., 60., 80., 140., 10., 120., 100., 10., 20., 10., 100., 230., 30., 10., 10., 100., 100.]
-        # not unique 3 detectors
-        # n_values = [40., 20., 80., 120., 100., 20., 60., 80., 40., 0., 20., 60., 20., 80., 200., 20., 60., 220., 240., 20.]
         rescored_detection_vectors = {}
         precisions = {}
         keys = detectors_names_list
@@ -454,8 +485,7 @@ class DynamicBeliefFusion:
 
         m_T_f = calculate_hypothesis_bpa(0, 2)
         m_notT_f = calculate_hypothesis_bpa(1, 2)
-        N = m_T_f + m_notT_f + np.prod(detector_prediction[(np.array(range(len(detector_prediction))),
-                                                            np.array([2] * len(detector_prediction)))])
+        N = m_T_f + m_notT_f + np.prod(detector_prediction[(np.array(range(len(detector_prediction))), np.array([2] * len(detector_prediction)))])
         m_T_f /= N + epsilon
         m_notT_f /= N + epsilon
         return m_T_f, m_notT_f
@@ -501,15 +531,16 @@ class DynamicBeliefFusion:
 
     def compute_dbf_map(self, map_computation, select_threshold, n):
 
-        if os.path.isfile(self.dbf_test_detections_filename):
-            os.remove(self.dbf_test_detections_filename)
+        # if os.path.isfile(self.dbf_test_detections_filename):
+        #     os.remove(self.dbf_test_detections_filename)
 
         time_count = 0
 
         a = datetime.datetime.now()
 
         if not os.path.exists(self.dbf_test_detections_filename):
-            f = open(self.dbf_test_detections_filename, 'w')
+            full_detections = []
+            # f = open(self.dbf_test_detections_filename, 'w')
             for j in range(len(self.ssd_test_full_detections)):
                 imagename = self.ssd_test_full_detections[j][0]
 
@@ -564,9 +595,6 @@ class DynamicBeliefFusion:
                 detection_vectors, labels, joined_detections_indices = self.get_detection_vectors(bounding_boxes, scores_with_labels)
                 rescored_detection_vectors, precisions = self.rescore_with_dbf(detection_vectors, labels, n)
                 bounding_boxes, labels, scores = self.dempster_combination_rule_result(bounding_boxes, rescored_detection_vectors, labels)
-
-                # img = read_one_image('/home/yulia/PycharmProjects/PASCAL VOC/VOC2007 test/VOC2007/JPEGImages/' + imagename)
-                # visualization.plt_bboxes(img, labels, class_scores, bounding_boxes)
 
                 # print(len(bounding_boxes))
                 # print([len(bounding_boxes[labels == i]) for i in range(20)])
@@ -625,38 +653,46 @@ class DynamicBeliefFusion:
                     labels, scores, bounding_boxes, _, _ = np_methods.bboxes_nms(labels, scores, bounding_boxes, scores,
                                                                                  scores, None, nms_threshold=0.5,
                                                                                  sort_detections=False)
+                else:
+                    labels = np.array([])
+                    scores = np.array([])
+                    bounding_boxes = np.array([])
+
+                # full_detections.append((imagename, bounding_boxes, labels, scores))
 
                 # print(len(bounding_boxes))
                 # print([len(bounding_boxes[labels == i]) for i in range(20)])
 
                 # img = read_one_image(
-                #     '/home/yulia/PycharmProjects/PASCAL VOC/VOC2007 test/VOC2007/JPEGImages/' + imagename)
-                # visualization.plt_bboxes(img, labels, class_scores, bounding_boxes)
+                #     '/home/yulia/PycharmProjects/PASCAL VOC/VOC2012 test/VOC2012/JPEGImages/' + imagename)
+                # visualization.plt_bboxes(img, labels, scores, bounding_boxes)
 
                 time_count += 1
 
-                if len(class_scores) > 0:
-                    rscores = scores
-                    for i in range(len(labels)):
-                        xmin = bounding_boxes[i, 0]
-                        ymin = bounding_boxes[i, 1]
-                        xmax = bounding_boxes[i, 2]
-                        ymax = bounding_boxes[i, 3]
-                        result = '{imagename} {rclass} {rscore} {xmin} {ymin} {xmax} {ymax}\n'.format(
-                            imagename=imagename, rclass=self.classnames[labels[i]],
-                            rscore=rscores[i], xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
-                        # print(str(j) + '/' + str(len(self.ssd_test_full_detections)), result)
-                        f.write(result)
-            f.close()
+                # if len(scores) > 0:
+                #     rscores = scores
+                #     for i in range(len(labels)):
+                #         xmin = bounding_boxes[i, 0]
+                #         ymin = bounding_boxes[i, 1]
+                #         xmax = bounding_boxes[i, 2]
+                #         ymax = bounding_boxes[i, 3]
+                #         result = '{imagename} {rclass} {rscore} {xmin} {ymin} {xmax} {ymax}\n'.format(
+                #             imagename=imagename, rclass=self.classnames[labels[i]],
+                #             rscore=rscores[i], xmin=xmin, ymin=ymin, xmax=xmax, ymax=ymax)
+                #         print(str(j) + '/' + str(len(self.ssd_test_full_detections)), result)
+                #         # f.write(result)
+            # f.close()
+            # with open(self.dbf_test_full_detections_filename, 'wb') as f:
+            #     pickle.dump(full_detections, f)
             b = datetime.datetime.now()
             total_time = (b - a).seconds
-            aps, map, dict = map_computation.compute_map(self.dataset_name, self.images_dir, self.annotations_dir, self.cache_dir, self.dbf_test_imagenames_filename,
-                                        self.dbf_test_annotations_filename, self.dbf_test_pickled_annotations_filename, self.dbf_test_detections_filename,
-                                        self.dbf_test_full_detections_filename)
-            print('mAP:', map)
-            print('aps:', aps)
+            # aps, map, dict = map_computation.compute_map(self.dataset_name, self.images_dir, self.annotations_dir, self.cache_dir, self.dbf_test_imagenames_filename,
+            #                             self.dbf_test_annotations_filename, self.dbf_test_pickled_annotations_filename, self.dbf_test_detections_filename,
+            #                             self.dbf_test_full_detections_filename)
+            # print('mAP:', map)
+            # print('aps:', aps)
             print('Average DBF time: ', float(total_time) / time_count)
-            return map
+            # return map
 
 
 if __name__ == '__main__':
@@ -667,12 +703,4 @@ if __name__ == '__main__':
 
     map_computation = Computation_mAP(dbf)
 
-    best_n = 0
-    best_map = 0.0
-    for n in range(0, 40, 2):
-        print('n=', n)
-        map = dbf.compute_dbf_map(map_computation, 0.015, float(n))
-        if map > best_map:
-            best_n = n
-            best_map = map
-    print('Best n=', best_n)
+    map = dbf.compute_dbf_map(map_computation, 0.015, best_n)

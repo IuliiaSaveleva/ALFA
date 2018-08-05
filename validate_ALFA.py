@@ -5,6 +5,7 @@ import numpy as np
 import json
 import pprint
 import os
+import pickle
 
 from map_computation import Computation_mAP
 from reading_methods import read_detectors_full_detections, read_imagenames, read_annotations
@@ -12,7 +13,7 @@ from ALFA import ALFA
 
 
 def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections, alfa_parameters_dict,
-                  map_iou_threshold, weighted_map=False, full_imagenames=None):
+                  map_iou_threshold, output_filename=None, weighted_map=False, full_imagenames=None):
     """
     Validate ALFA algorithm
 
@@ -49,6 +50,9 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
 
     map_iou_threshold : float
         Jaccard coefficient value to compute mAP, between [0, 1]
+
+    output_filename : str
+        Pickle to store ALFA output. It has the same format, as base detector\'s pickles
 
     weighted_map : boolean
             True - compute weighted mAP by part class samples count to all class samples count in dataset
@@ -113,6 +117,10 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
     b = datetime.datetime.now()
     total_time += (b - a).seconds
 
+    if output_filename is not None:
+        with open(output_filename, 'wb') as f:
+            pickle.dump(alfa_full_detections, f)
+
     aps, mAP, pr_curves = map_computation.compute_map(dataset_name, dataset_dir, imagenames,
                                             annotations, alfa_full_detections, map_iou_threshold,
                                                       weighted_map, full_imagenames)
@@ -167,6 +175,8 @@ def parse_arguments(argv):
                              'detections_filenames list of pickles that store detections for mAP computation')
     parser.add_argument('--map_iou_threshold', type=float,
                         help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
+    parser.add_argument('--output_filename', type=str,
+                        help='Pickle to store ALFA output. It has the same format, as base detector\'s pickles')
     return parser.parse_args(argv)
 
 
@@ -184,7 +194,8 @@ def main(args):
     annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
 
     validate_ALFA(args.dataset_name, args.dataset_dir, imagenames,
-                    annotations, detectors_full_detections, alfa_parameters_dict, args.map_iou_threshold)
+                    annotations, detectors_full_detections, alfa_parameters_dict, args.map_iou_threshold,
+                  args.output_filename)
 
 
 if __name__ == '__main__':
