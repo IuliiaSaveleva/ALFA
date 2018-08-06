@@ -3,8 +3,7 @@
 By Evgenii Razinkov, Iuliia Saveleva, Jiří Matas
 
 The paper "ALFA: Agglomerative Late Fusion Algorithm for Object Detection" is accepted 
-to ICPR 2018, the link and description to the method will be added here as soon as 
-the paper become available.
+to ICPR 2018, the link will be added here as soon as the paper become available.
 
 ## Evaluate on Pascal VOC 2007
 
@@ -36,7 +35,11 @@ python ./validate_ALFA.py \
 
 ### DBF
 
+In progress...
+
 ### NMS
+
+In progress...
 
 ## Evaluate on Pascal VOC 2012
 
@@ -77,4 +80,8 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 
 ### DBF
 
+In progress...
+
 ### NMS
+
+In progress...
