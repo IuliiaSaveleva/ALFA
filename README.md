@@ -58,7 +58,7 @@ python ./validate_ALFA.py \
 
 * convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
-python ./detections_to_pascal_2012_submission.py \
+python ./detections_to_PASCAL_VOC_2012_submission.py \
 --detections_filename="path/to/output_filename.pkl"
 --submission_folder="path/to/submission_folder"
 ```
