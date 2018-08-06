@@ -11,7 +11,7 @@ the paper become available.
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper:
 
-# ALFA
+### ALFA
 
 * get ALFA detections running the following command:
 ```bash
@@ -34,15 +34,15 @@ python ./validate_ALFA.py \
 | ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.015_multiple_cross_validation_parameters_2007.json |
 
 
-# DBF
+### DBF
 
-# NMS
+### NMS
 
 ## Evaluate on Pascal VOC 2012
 
 You can reproduce the results of algorithms on PASCAL VOC 2012.
 
-#ALFA
+### ALFA
 * get ALFA detections running the following command:
 ```bash
 python ./validate_ALFA.py \
@@ -75,6 +75,6 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 
 * upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
 
-# DBF
+### DBF
 
-# NMS
+### NMS
