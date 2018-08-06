@@ -10,7 +10,8 @@ Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-val
 
 ## Evaluation on Pascal VOC 2012
 
-To reproduce the results of ALFA algorithm on PASCAL VOC 2012 run the following command:
+To reproduce the results of ALFA algorithm on PASCAL VOC 2012:
+* get ALFA detections running the following command:
 ```bash
 python ./validate_ALFA.py \
 --dataset_dir="path/to/VOC2012 test/VOC2012" \
@@ -30,3 +31,12 @@ python ./validate_ALFA.py \
 | ALFA | SSD + DeNet | No |  SSD_DeNet_ALFA_0.015_multiple_cross_validation_parameters_2012.json |
 | Fast ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.05_multiple_cross_validation_parameters_2012.json |
 | ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.015_multiple_cross_validation_parameters_2012.json |
+
+* convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
+```bash
+python ./detections_to_pascal_2012_submission.py
+```
+
+* archive "" as .tar.gz
+
+* upload "".tar.gz to PASCAL VOC 2012 evaluation server
