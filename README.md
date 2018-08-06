@@ -5,7 +5,7 @@ By Evgenii Razinkov, Iuliia Saveleva, Jiří Matas
 The paper "ALFA: Agglomerative Late Fusion Algorithm for Object Detection" is accepted 
 to ICPR 2018, the link will be added here as soon as the paper become available.
 
-## Evaluate on Pascal VOC 2007
+## Evaluate on PASCAL VOC 2007
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper:
@@ -41,7 +41,7 @@ In progress...
 
 In progress...
 
-## Evaluate on Pascal VOC 2012
+## Evaluate on PASCAL VOC 2012
 
 You can reproduce the results of algorithms on PASCAL VOC 2012.
 
