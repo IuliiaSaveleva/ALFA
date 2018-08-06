@@ -9,7 +9,7 @@ the paper become available.
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 To reproduce the results of ALFA algorithm on PASCAL VOC 2012 run the following command:
 ```bash
-python validate_ALFA.py \
+python ./validate_ALFA.py \
 --dataset_dir="path/to/VOC2012 test/VOC2012" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
