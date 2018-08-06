@@ -21,7 +21,7 @@ python ./validate_ALFA.py \
 ```
 
 | Alghorithm | Detectors  | Parameters |
-|--------|:---------:|:------:|:------:|:------:|
+|--------|:---------:|:------:|
 | Fast ALFA | SSD + DeNet | ./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json |
 | ALFA | SSD + DeNet | ./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2012.json |
 | Fast ALFA | SSD + DeNet + Faster R-CNN | ./Cross_validation_ALFA_parameters/SSD_DeNet_Faster_R-CNN_ALFA_0.05_single_cross_validation_parameters_2012.json |
