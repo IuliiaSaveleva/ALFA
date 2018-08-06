@@ -14,7 +14,7 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
 
 * get ALFA detections running the following command:
 ```bash
-python ./validate_ALFA.py \
+python ./cross_validate_ALFA.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \

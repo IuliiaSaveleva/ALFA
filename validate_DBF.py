@@ -9,50 +9,54 @@ import pickle
 
 from map_computation import Computation_mAP
 from reading_methods import read_detectors_detections, read_imagenames, read_annotations
-from ALFA import ALFA
+from DBF import DBF
 
 
-def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_detections, alfa_parameters_dict,
-                  map_iou_threshold, output_filename=None, weighted_map=False, full_imagenames=None):
+def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations,
+                 validation_detectors_detections, test_dataset_dir, test_imagenames,
+                 test_annotations, test_detectors_detections, dbf_parameters_dict, map_iou_threshold, output_filename=None,
+                 weighted_map=False, full_imagenames=None):
     """
-    Validate ALFA algorithm
+    Validate DBF algorithm
 
     ----------
     dataset_name : string
         Dataset name, e.g. 'PASCAL VOC'
 
-    dataset_dir : string
-        Path to images dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/'
+    validation_dataset_dir : string
+        Path to validation images dir, e.g.'.../PASCAL VOC/VOC2007 test/VOC2007/'
 
-    imagenames : list
-            List contains all or a part of dataset filenames
+    validation_imagenames : list
+            List contains all or a part of validation dataset filenames
 
-    annotations : dict
-        Dict of annotations
+    validation_annotations : dict
+        Dict of annotations from validation dataset
 
-    detectors_detections: dict
-        Dict of full detections for different detectors
+    validation_detectors_detections: dict
+        Dict of validation detections for different detectors
 
-    alfa_parameters_dict : dict
+    test_dataset_dir : string
+        Path to test images dir, e.g.'.../PASCAL VOC/VOC2012 test/VOC2012/'
+
+    test_imagenames : list
+            List contains all or a part of test dataset filenames
+
+    test_annotations : dict
+        Dict of annotations from test dataset
+
+    test_detectors_detections: dict
+        Dict of test detections for different detectors
+
+    dbf_parameters_dict : dict
         Contains list of one element for each parameter:
 
-        tau in the paper, between [0.0, 1.0]
-        gamma in the paper, between [0.0, 1.0]
-        bounding_box_fusion_method ["MIN", "MAX", "MOST CONFIDENT", "AVERAGE", "WEIGHTED AVERAGE",
-        "WEIGHTED AVERAGE FINAL LABEL"]
-        class_scores_fusion_method ["MOST CONFIDENT", "AVERAGE", "MULTIPLY"]
-        add_empty_detections, if true - low confidence class scores tuple will be added to cluster for each detector, that missed
-        epsilon in the paper, between [0.0, 1.0]
-        same_labels_only, if true only detections with same class label will be added into same cluster
-        confidence_style means how to compute score for object proposal ["LABEL", "ONE MINUS NO OBJECT"]
-        use_BC, if true - Bhattacharyya and Jaccard coefficient will be used to compute detections similarity score
-        max_1_box_per_detector, if true - only one detection form detector could be added to cluster
+        n in the paper
 
     map_iou_threshold : float
         Jaccard coefficient value to compute mAP, between [0, 1]
 
     output_filename : str
-        Pickle to store ALFA output. It has the same format, as base detector\'s pickles
+        Pickle to store DBF output. It has the same format, as base detector\'s pickles
 
     weighted_map : boolean
             True - compute weighted mAP by part class samples count to all class samples count in dataset
@@ -63,53 +67,39 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
             weighted map on a part of dataset
     """
 
-    alfa = ALFA()
+    dbf = DBF(dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations, 
+              validation_detectors_detections, map_iou_threshold)
     map_computation = Computation_mAP(None)
 
     total_time = 0
     time_count = 0
-    alfa_full_detections = []
+    dbf_full_detections = []
 
-    print('Running ALFA on dataset...')
-
-    param_idx = alfa_parameters_dict['main_fold']
-    if param_idx >= len(alfa_parameters_dict['tau']):
-        param_idx = 0
+    print('Running DBF on dataset...')
 
     a = datetime.datetime.now()
-    for j in range(len(detectors_detections[0])):
-        imagename = detectors_detections[0][j][0]
+    for j in range(len(test_detectors_detections[0])):
+        imagename = test_detectors_detections[0][j][0]
 
         bounding_boxes = {}
         labels = {}
         class_scores = {}
 
-        for key in detectors_detections.keys():
-            if len(detectors_detections[key][j][1]) > 0:
-                bb = detectors_detections[key][j][1]
-                l = np.array(detectors_detections[key][j][2])
-                cl_sc = np.array(detectors_detections[key][j][3])
+        for key in test_detectors_detections.keys():
+            if len(test_detectors_detections[key][j][1]) > 0:
+                bb = test_detectors_detections[key][j][1]
+                l = np.array(test_detectors_detections[key][j][2])
+                cl_sc = np.array(test_detectors_detections[key][j][3])
                 scores = np.array([cl_sc[i, 1:][l[i]] for i in range(len(l))])
-                indices = np.where(scores > alfa_parameters_dict['select_threshold'])[0]
+                indices = np.where(scores > dbf_parameters_dict['select_threshold'])[0]
                 if len(indices) > 0:
                     bounding_boxes[key] = bb[indices]
                     labels[key] = l[indices]
                     class_scores[key] = cl_sc[indices]
 
         if bounding_boxes != {}:
-            bounding_boxes, labels, class_scores = alfa.ALFA_result(detectors_detections.keys(),
-                                                                    bounding_boxes, class_scores,
-                                                                    alfa_parameters_dict['tau'][param_idx],
-                                                                    alfa_parameters_dict['gamma'][param_idx],
-                                                                    alfa_parameters_dict['bounding_box_fusion_method'][param_idx],
-                                                                    alfa_parameters_dict['class_scores_fusion_method'][param_idx],
-                                                                    alfa_parameters_dict['add_empty_detections'][param_idx],
-                                                                    alfa_parameters_dict['epsilon'][param_idx],
-                                                                    alfa_parameters_dict['same_labels_only'][param_idx],
-                                                                    alfa_parameters_dict['confidence_style'][param_idx],
-                                                                    alfa_parameters_dict['use_BC'][param_idx],
-                                                                    alfa_parameters_dict['max_1_box_per_detector'][param_idx],
-                                                                    alfa_parameters_dict['single'])
+            bounding_boxes, labels, class_scores = dbf.DBF_result(bounding_boxes, class_scores, labels,
+                                                                    dbf_parameters_dict['n'])
             time_count += 1
         else:
             bounding_boxes = np.array([])
@@ -134,10 +124,10 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
     return aps, mAP, pr_curves
 
 
-def parse_parameters_json(parameters_json):
-    with open(parameters_json, 'r') as f:
-        parameters_dict = json.load(f)
-    return parameters_dict
+def parse_alfa_parameters_json(alfa_parameters_json):
+    with open(alfa_parameters_json, 'r') as f:
+        alfa_parameters_dict = json.load(f)
+    return alfa_parameters_dict
 
 
 def check_flag(value):
@@ -186,7 +176,7 @@ def parse_arguments(argv):
 
 def main(args):
 
-    alfa_parameters_dict = parse_parameters_json(args.alfa_parameters_json)
+    alfa_parameters_dict = parse_alfa_parameters_json(args.alfa_parameters_json)
     pprint.pprint(alfa_parameters_dict)
 
     detectors_detections = read_detectors_detections(alfa_parameters_dict['detections_filenames'])

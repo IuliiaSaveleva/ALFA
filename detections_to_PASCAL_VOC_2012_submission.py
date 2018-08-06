@@ -3,7 +3,7 @@ import shutil
 import argparse
 import sys
 
-from reading_methods import read_detectors_full_detections
+from reading_methods import read_detectors_detections
 
 dataset_classnames = {
     'PASCAL VOC': ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog',
@@ -24,7 +24,7 @@ def detections_to_pascal_voc_2012_submission(detections_filename, submission_fol
 
     classes_imagenames_scores_bboxes = {}
 
-    full_detections = list(read_detectors_full_detections([detections_filename]).values())[0]
+    full_detections = list(read_detectors_detections([detections_filename]).values())[0]
 
     for j in range(len(full_detections)):
         imagename = full_detections[j][0].split('.')[0]

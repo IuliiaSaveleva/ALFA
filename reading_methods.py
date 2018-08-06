@@ -84,7 +84,7 @@ def read_annotations(filename, dir, imagenames, dataset_name):
     return recs
 
 
-def read_detectors_full_detections(detections_filenames):
+def read_detectors_detections(detections_filenames):
 
     """
     Method to read detections into dict
@@ -100,7 +100,7 @@ def read_detectors_full_detections(detections_filenames):
 
     Returns
     -------
-    detectors_full_detections: dict
+    detectors_detections: dict
         Dictionary, containing detections for n detectors:
 
         '1': [

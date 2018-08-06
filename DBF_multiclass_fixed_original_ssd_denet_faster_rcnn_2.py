@@ -45,7 +45,7 @@ detectors_names_list = ['ssd', 'denet']
 
 
 class DynamicBeliefFusion:
-    def __init__(self):
+    def __init__(self, detectors_names):
 
         self.epsilon = 0.0001
 

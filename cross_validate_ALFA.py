@@ -7,11 +7,11 @@ import pprint
 import os
 
 from sklearn.model_selection import KFold
-from validate_ALFA import validate_ALFA, read_detectors_full_detections, check_flag, parse_alfa_parameters_json
+from validate_ALFA import validate_ALFA, read_detectors_detections, parse_parameters_json
 from reading_methods import read_imagenames, read_annotations
 
 
-def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_full_detections,
+def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_detections,
                         alfa_parameters_dict, map_iou_threshold, folds_count):
     """
     Validate ALFA algorithm
@@ -29,8 +29,8 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
     annotations : dict
         Dict of annotations
 
-    detectors_full_detections: dict
-        Dict of full detections for diferent detectors
+    detectors_detections: dict
+        Dict of detections for different detectors
 
     alfa_parameters_dict: dict
 
@@ -55,11 +55,11 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
         Number of folds to cross-validate
     """
 
-    # imagenames = sorted(imagenames)
-    imagenames = np.array(imagenames)
-    random.seed(123)
-    random_indices = random.sample(range(len(imagenames)), len(imagenames))
-    imagenames = imagenames[random_indices]
+    imagenames = sorted(imagenames)
+    # imagenames = np.array(imagenames)
+    # random.seed(123)
+    # random_indices = random.sample(range(len(imagenames)), len(imagenames))
+    # imagenames = imagenames[random_indices]
 
     kf = KFold(n_splits=folds_count)
     fold_index = 0
@@ -76,8 +76,8 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
             return new_full_detections
 
         detectors_fold_detections = {}
-        for key in detectors_full_detections.keys():
-            detector_fold_detections = get_detections_by_imagenames(detectors_full_detections[key], fold_imagenames)
+        for key in detectors_detections.keys():
+            detector_fold_detections = get_detections_by_imagenames(detectors_detections[key], fold_imagenames)
             detectors_fold_detections[key] = detector_fold_detections
 
         fold_alfa_parameters = {}
@@ -143,12 +143,12 @@ def main(args):
     imagenames = read_imagenames(args.imagenames_filename, images_dir)
     annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
 
-    alfa_parameters_dict = parse_alfa_parameters_json(args.alfa_parameters_json)
+    alfa_parameters_dict = parse_parameters_json(args.alfa_parameters_json)
     pprint.pprint(alfa_parameters_dict)
 
-    detectors_full_detections = read_detectors_full_detections(alfa_parameters_dict['detections_filenames'])
+    detectors_detections = read_detectors_detections(alfa_parameters_dict['detections_filenames'])
 
-    cross_validate_ALFA(args.dataset_name, args.dataset_dir, imagenames, annotations, detectors_full_detections,
+    cross_validate_ALFA(args.dataset_name, args.dataset_dir, imagenames, annotations, detectors_detections,
                         alfa_parameters_dict, args.map_iou_threshold, args.folds_count)
 
 if __name__ == '__main__':
