@@ -20,9 +20,13 @@ python ./validate_ALFA.py \
 --output_filename="path/to/output_filename.pkl"
 ```
 
-| Alghorithm | Detectors  | Parameters |
-|--------|:---------:|:------:|
-| Fast ALFA | SSD + DeNet | ./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json |
-| ALFA | SSD + DeNet | ./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2012.json |
-| Fast ALFA | SSD + DeNet + Faster R-CNN | ./Cross_validation_ALFA_parameters/SSD_DeNet_Faster_R-CNN_ALFA_0.05_single_cross_validation_parameters_2012.json |
-| ALFA | SSD + DeNet + Faster R-CNN | ./Cross_validation_ALFA_parameters/SSD_DeNet_Faster_R-CNN_ALFA_0.015_single_cross_validation_parameters_2012.json |
+| Alghorithm | Detectors  | single detection | Parameters |
+|--------|:---------:|:------:| :------:|
+| Fast ALFA | SSD + DeNet | Yes  | SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json |
+| ALFA | SSD + DeNet | Yes |  SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2012.json |
+| Fast ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_ALFA_0.05_single_cross_validation_parameters_2012.json |
+| ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_ALFA_0.015_single_cross_validation_parameters_2012.json |
+| Fast ALFA | SSD + DeNet | No | SSD_DeNet_ALFA_0.05_multiple_cross_validation_parameters_2012.json |
+| ALFA | SSD + DeNet | No |  SSD_DeNet_ALFA_0.015_multiple_cross_validation_parameters_2012.json |
+| Fast ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.05_multiple_cross_validation_parameters_2012.json |
+| ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.015_multiple_cross_validation_parameters_2012.json |
