@@ -7,6 +7,9 @@ to ICPR 2018, the link and description to the method will be added here as soon 
 the paper become available.
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
+
+## Evaluation on Pascal VOC 2012
+
 To reproduce the results of ALFA algorithm on PASCAL VOC 2012 run the following command:
 ```bash
 python ./validate_ALFA.py \
@@ -16,3 +19,10 @@ python ./validate_ALFA.py \
 --alfa_parameters_json="./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json" \
 --output_filename="path/to/output_filename.pkl"
 ```
+
+| Alghorithm | Detectors  | Parameters |
+|--------|:---------:|:------:|:------:|:------:|
+| Fast ALFA | SSD + DeNet | ./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json |
+| ALFA | SSD + DeNet | ./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2012.json |
+| Fast ALFA | SSD + DeNet + Faster R-CNN | ./Cross_validation_ALFA_parameters/SSD_DeNet_Faster_R-CNN_ALFA_0.05_single_cross_validation_parameters_2012.json |
+| ALFA | SSD + DeNet + Faster R-CNN | ./Cross_validation_ALFA_parameters/SSD_DeNet_Faster_R-CNN_ALFA_0.015_single_cross_validation_parameters_2012.json |
