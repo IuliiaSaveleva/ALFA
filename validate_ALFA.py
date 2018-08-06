@@ -161,7 +161,7 @@ def parse_arguments(argv):
     parser.add_argument('--pickled_annots_filename', type=str,
         help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2007_test.pkl\"')
     parser.add_argument('--alfa_parameters_json', required=True, type=str,
-                        help='File from directory \"./Cross_validation_ALFA_parameters\", that contains parameters:'
+                        help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
                              'tau in the paper, between [0.0, 1.0], '
                              'gamma in the paper, between [0.0, 1.0],'
                              'bounding_box_fusion_method [\"MIN\", \"MAX\", \"MOST CONFIDENT\", \"AVERAGE\", '

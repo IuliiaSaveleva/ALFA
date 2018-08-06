@@ -73,7 +73,7 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
 
     total_time = 0
     time_count = 0
-    dbf_full_detections = []
+    dbf_detections = []
 
     print('Running DBF on dataset...')
 
@@ -106,17 +106,17 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
             labels = np.array([])
             class_scores = np.array([])
 
-        alfa_full_detections.append((imagename, bounding_boxes, labels, class_scores))
+            dbf_detections.append((imagename, bounding_boxes, labels, class_scores))
 
     b = datetime.datetime.now()
     total_time += (b - a).seconds
 
     if output_filename is not None:
         with open(output_filename, 'wb') as f:
-            pickle.dump(alfa_full_detections, f)
+            pickle.dump(dbf_detections, f)
 
-    aps, mAP, pr_curves = map_computation.compute_map(dataset_name, dataset_dir, imagenames,
-                                            annotations, alfa_full_detections, map_iou_threshold,
+    aps, mAP, pr_curves = map_computation.compute_map(dataset_name, test_dataset_dir, test_imagenames,
+                                            test_annotations, dbf_detections, map_iou_threshold,
                                                       weighted_map, full_imagenames)
 
     print('Average ensemble time: ', float(total_time) / float(time_count))
@@ -144,26 +144,21 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset_name', type=str, help='Only \"PASCAL VOC\" is supported, default=\"PASCAL VOC\"',
                         default='PASCAL VOC')
-    parser.add_argument('--dataset_dir', required=True, type=str,
+    parser.add_argument('--validation_dataset_dir', required=True, type=str,
                         help='e.g.=\"(Your path)/PASCAL VOC/VOC2007 test/VOC2007\"')
-    parser.add_argument('--imagenames_filename', required=True, type=str,
+    parser.add_argument('--validation_imagenames_filename', required=True, type=str,
         help='File where images filenames to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/imagesnames_2007_test.txt\"')
-    parser.add_argument('--pickled_annots_filename', type=str,
+    parser.add_argument('--validation_pickled_annots_filename', type=str,
         help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2007_test.pkl\"')
-    parser.add_argument('--alfa_parameters_json', required=True, type=str,
-                        help='File from directory \"./Cross_validation_ALFA_parameters\", that contains parameters:'
-                             'tau in the paper, between [0.0, 1.0], '
-                             'gamma in the paper, between [0.0, 1.0],'
-                             'bounding_box_fusion_method [\"MIN\", \"MAX\", \"MOST CONFIDENT\", \"AVERAGE\", '
-                             'class_scores_fusion_method [\"MOST CONFIDENT\", \"AVERAGE\", \"MULTIPLY\", '
-                             'add_empty_detections, if true - low confidence class scores tuple will be added to cluster '
-                             'for each detector, '
-                             'epsilon in the paper, between [0.0, 1.0], '
-                             'same_labels_only, if true - only detections with same class label will be added into same '
-                             'cluster, '
-                             'confidence_style_list ["LABEL", "ONE MINUS NO OBJECT"], '
-                             'use_BC, if true - Bhattacharyya and Jaccard coefficient will be used to compute detections '
-                             'max_1_box_per_detector, if true - only one detection form detector could be added to cluster, '
+    parser.add_argument('--test_dataset_dir', required=True, type=str,
+                        help='e.g.=\"(Your path)/PASCAL VOC/VOC2012 test/VOC2012\"')
+    parser.add_argument('--test_imagenames_filename', required=True, type=str,
+                        help='File where images filenames to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/imagesnames_2012_test.txt\"')
+    parser.add_argument('--test_pickled_annots_filename', type=str,
+                        help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2012_test.pkl\"')
+    parser.add_argument('--parameters_json', required=True, type=str,
+                        help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
+                             'n in the paper, '
                              'single, if true computes ALFA prediction for mAP-s computation refered in paper, '
                              'select_threshold is the confidence threshold for detections, '
                              'detections_filenames list of pickles that store detections for mAP computation')
@@ -187,7 +182,7 @@ def main(args):
     imagenames = read_imagenames(args.imagenames_filename, images_dir)
     annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
 
-    validate_ALFA(args.dataset_name, args.dataset_dir, imagenames,
+    validate_DBF(args.dataset_name, args.dataset_dir, imagenames,
                     annotations, detectors_detections, alfa_parameters_dict, args.map_iou_threshold,
                   args.output_filename)
 

@@ -1,0 +1,9 @@
+{
+    "detections_filenames": [
+    "./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl",
+    "./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl"
+  ],
+  "single": true,
+  "select_threshold": 0.05,
+  "n": 16.0
+}

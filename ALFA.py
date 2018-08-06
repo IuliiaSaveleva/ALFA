@@ -6,7 +6,7 @@ from NMS import bboxes_nms
 
 
 class Object:
-    def __init__(self, all_detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method, class_scores_fusion_method,
+    def __init__(self, all_detectors_names, detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method, class_scores_fusion_method,
                  add_empty_detections, empty_epsilon, confidence_style):
 
         self.bounding_box_fusion_method = bounding_box_fusion_method
@@ -19,7 +19,7 @@ class Object:
         self.number_of_classes = len(class_scores[0]) if len(class_scores) > 0 else 0
         self.bounding_boxes = bounding_boxes
         self.class_scores = list(class_scores)
-        self.detected_by = bounding_boxes.keys()
+        self.detected_by = detectors_names
         self.epsilon = 0.0
         self.finalized = False
 

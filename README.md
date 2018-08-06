@@ -18,19 +18,19 @@ python ./cross_validate_ALFA.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---alfa_parameters_json="./Cross_validation_ALFA_parameters/SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2007.json"
+--alfa_parameters_json="./Cross_validation_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
 ```
 
 | Algorithm | Detectors  | Single detections | Parameters |
 |--------|:---------:|:------:| :------:|
-| Fast ALFA | SSD + DeNet | Yes  | SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2007.json |
-| ALFA | SSD + DeNet | Yes |  SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2007.json |
-| Fast ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_ALFA_0.05_single_cross_validation_parameters_2007.json |
-| ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_ALFA_0.015_single_cross_validation_parameters_2007.json |
-| Fast ALFA | SSD + DeNet | No | SSD_DeNet_ALFA_0.05_multiple_cross_validation_parameters_2007.json |
-| ALFA | SSD + DeNet | No |  SSD_DeNet_ALFA_0.015_multiple_cross_validation_parameters_2007.json |
-| Fast ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.05_multiple_cross_validation_parameters_2007.json |
-| ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_ALFA_0.015_multiple_cross_validation_parameters_2007.json |
+| Fast ALFA | SSD + DeNet | Yes  | SSD_DeNet_0.05_single_cross_validation_parameters_2007.json |
+| ALFA | SSD + DeNet | Yes |  SSD_DeNet_0.015_single_cross_validation_parameters_2007.json |
+| Fast ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2007.json |
+| ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2007.json |
+| Fast ALFA | SSD + DeNet | No | SSD_DeNet_0.05_multiple_cross_validation_parameters_2007.json |
+| ALFA | SSD + DeNet | No |  SSD_DeNet_0.015_multiple_cross_validation_parameters_2007.json |
+| Fast ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2007.json |
+| ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2007.json |
 
 
 ### DBF

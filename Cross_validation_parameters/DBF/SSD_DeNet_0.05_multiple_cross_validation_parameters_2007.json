@@ -1,0 +1,9 @@
+{
+  "detections_filenames": [
+    "./SSD_detections/SSD_ovthresh_0.015_multiple_detections_PASCAL_VOC_2007_test.pkl",
+    "./DeNet_detections/DeNet_ovthresh_0.015_multiple_detections_PASCAL_VOC_2007_test.pkl"
+  ],
+  "single": false,
+  "select_threshold": 0.05,
+  "n": 16.0
+}
