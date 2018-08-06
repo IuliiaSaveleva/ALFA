@@ -20,7 +20,7 @@ python ./validate_ALFA.py \
 --output_filename="path/to/output_filename.pkl"
 ```
 
-| Alghorithm | Detectors  | single detection | Parameters |
+| Algorithm | Detectors  | single detection | Parameters |
 |--------|:---------:|:------:| :------:|
 | Fast ALFA | SSD + DeNet | Yes  | SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json |
 | ALFA | SSD + DeNet | Yes |  SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2012.json |
