@@ -2,13 +2,12 @@ import datetime
 import argparse
 import sys
 import numpy as np
-import json
 import pprint
 import os
 import pickle
 
 from map_computation import Computation_mAP
-from reading_methods import read_detectors_detections, read_imagenames, read_annotations
+from reading_methods import read_detectors_detections, read_imagenames, read_annotations, parse_parameters_json
 from ALFA import ALFA
 
 
@@ -132,22 +131,6 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
     print('Average ensemble time: ', float(total_time) / float(time_count))
 
     return aps, mAP, pr_curves
-
-
-def parse_parameters_json(parameters_json):
-    with open(parameters_json, 'r') as f:
-        parameters_dict = json.load(f)
-    return parameters_dict
-
-
-def check_flag(value):
-    if value in ['True', 'False']:
-        if value == True:
-            return True
-        else:
-            return False
-    else:
-        raise argparse.ArgumentTypeError('%s is an invalid flag value, use \"True\" or \"False\"!' % value)
 
 
 def parse_arguments(argv):

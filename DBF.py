@@ -2,10 +2,12 @@ import numpy as np
 
 from map_computation import Computation_mAP
 from reading_methods import dataset_classnames
+from NMS import bboxes_nms
 
 class DBF:
-    def __init__(self, validation_dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations,
+    def __init__(self, all_detectors_names, validation_dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations,
                  validation_detectors_detections, map_iou_threshold):
+        self.all_detectors_names = list(all_detectors_names)
 
         self.epsilon = 1e-4
 
@@ -13,6 +15,7 @@ class DBF:
 
         self.detectors_pr_curves = {}
 
+        print('Computing PR-curves...')
         for key in validation_detectors_detections.keys():
             _, _, pr_curves = self.map_computation.compute_map(validation_dataset_name, validation_dataset_dir,
                                                    validation_imagenames, validation_annotations,
@@ -23,7 +26,8 @@ class DBF:
 
     def get_scores_with_labels(self, class_scores, labels):
         detectors_scores_and_labels = {}
-        for detector in class_scores.keys():
+        keys = self.all_detectors_names
+        for detector in keys:
             detector_detections_all_classes_scores = class_scores[detector]
             if len(detector_detections_all_classes_scores) > 0:
                 detector_labels = labels[detector]
@@ -41,7 +45,7 @@ class DBF:
         detection_vectors = {}
         labels = {}
         joined_detections_indices = {}
-        keys = bounding_boxes.keys()
+        keys = self.all_detectors_names
         for detector in keys:
             detector_bounding_boxes = bounding_boxes[detector]
             detector_detection_vectors = np.ones((len(detector_bounding_boxes), len(keys), 3)) * -float('Inf')
@@ -152,7 +156,7 @@ class DBF:
     def rescore_with_dbf(self, detection_vectors, labels, n):
         rescored_detection_vectors = {}
         precisions = {}
-        keys = labels.keys()
+        keys = self.all_detectors_names
         for detector in keys:
             detector_predictions = detection_vectors[detector]
             detector_labels = labels[detector]
@@ -236,10 +240,68 @@ class DBF:
 
     def DBF_result(self, detectors_bounding_boxes, detectors_class_scores, detectors_labels, n):
 
+        for key in self.all_detectors_names:
+            if key not in detectors_bounding_boxes:
+                detectors_bounding_boxes[key] = np.array([])
+                detectors_class_scores[key] = np.array([])
+                detectors_labels[key] = np.array([])
+
         scores_with_labels = self.get_scores_with_labels(detectors_class_scores, detectors_labels)
         detection_vectors, labels, joined_detections_indices = self.get_detection_vectors(detectors_bounding_boxes,
                                                                                           scores_with_labels)
         rescored_detection_vectors, precisions = self.rescore_with_dbf(detection_vectors, labels, n)
         bounding_boxes, labels, scores = self.dempster_combination_rule_result(detectors_bounding_boxes,
                                                                                rescored_detection_vectors, labels)
-        return bounding_boxes, labels, scores
+
+        precisions_list = []
+
+        for detector in precisions.keys():
+            precisions_list.extend(precisions[detector])
+
+        precisions = np.array(precisions_list)
+
+        sort_indices = np.argsort(-scores)
+        bounding_boxes = bounding_boxes[sort_indices]
+        labels = labels[sort_indices]
+        scores = scores[sort_indices]
+        precisions = precisions[sort_indices]
+        transposition_by_prec_indices = np.zeros(len(scores), np.int32)
+        i = 0
+        while i < len(scores):
+            score_i = scores[i]
+            k = i + 1
+            while k < len(scores):
+                score_k = scores[k]
+                if score_i != score_k:
+                    break
+                k += 1
+            same_indices = np.array(range(i, k))
+            prec_for_same = precisions[same_indices]
+            sorted_prec_for_same_indices = same_indices[np.argsort(-prec_for_same)]
+            transposition_by_prec_indices[i: k] = sorted_prec_for_same_indices
+            i = k
+        bounding_boxes = bounding_boxes[transposition_by_prec_indices]
+        labels = labels[transposition_by_prec_indices]
+        scores = scores[transposition_by_prec_indices]
+
+        if len(scores) > 0:
+            labels, scores, bounding_boxes, _, _ = bboxes_nms(labels, scores, bounding_boxes, scores,
+                                                                         scores, None, nms_threshold=0.5,
+                                                                         sort_detections=False)
+
+            keys = list(detectors_class_scores.keys())
+            if len(keys) > 0 and len(detectors_class_scores[keys[0]]) > 0:
+                class_scores = np.zeros((len(scores), len(detectors_class_scores[keys[0]][0])))
+                for i in range(len(labels)):
+                    class_scores[i][labels[i] + 1] = scores[i]
+            else:
+                labels = np.array([])
+                class_scores = np.array([])
+                bounding_boxes = np.array([])
+
+        else:
+            labels = np.array([])
+            class_scores = np.array([])
+            bounding_boxes = np.array([])
+
+        return bounding_boxes, labels, class_scores

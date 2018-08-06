@@ -6,15 +6,15 @@ from NMS import bboxes_nms
 
 
 class Object:
-    def __init__(self, all_detectors_names, detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method, class_scores_fusion_method,
-                 add_empty_detections, empty_epsilon, confidence_style):
+    def __init__(self, all_detectors_names, detectors_names, bounding_boxes, class_scores, bounding_box_fusion_method,
+                 class_scores_fusion_method, add_empty_detections, empty_epsilon, confidence_style):
 
         self.bounding_box_fusion_method = bounding_box_fusion_method
         self.class_scores_fusion_method = class_scores_fusion_method
         self.add_empty_detections = add_empty_detections
         self.empty_epsilon = empty_epsilon
         self.confidence_style = confidence_style
-        self.detectors_names = all_detectors_names
+        self.detectors_names = list(all_detectors_names)
 
         self.number_of_classes = len(class_scores[0]) if len(class_scores) > 0 else 0
         self.bounding_boxes = bounding_boxes

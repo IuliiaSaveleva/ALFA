@@ -2,13 +2,12 @@ import datetime
 import argparse
 import sys
 import numpy as np
-import json
 import pprint
 import os
 import pickle
 
 from map_computation import Computation_mAP
-from reading_methods import read_detectors_detections, read_imagenames, read_annotations
+from reading_methods import read_detectors_detections, read_imagenames, read_annotations, parse_parameters_json
 from DBF import DBF
 
 
@@ -67,7 +66,7 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
             weighted map on a part of dataset
     """
 
-    dbf = DBF(dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations, 
+    dbf = DBF(validation_detectors_detections.keys(), dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations,
               validation_detectors_detections, map_iou_threshold)
     map_computation = Computation_mAP(None)
 
@@ -106,7 +105,7 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
             labels = np.array([])
             class_scores = np.array([])
 
-            dbf_detections.append((imagename, bounding_boxes, labels, class_scores))
+        dbf_detections.append((imagename, bounding_boxes, labels, class_scores))
 
     b = datetime.datetime.now()
     total_time += (b - a).seconds
@@ -119,25 +118,9 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
                                             test_annotations, dbf_detections, map_iou_threshold,
                                                       weighted_map, full_imagenames)
 
-    print('Average ensemble time: ', float(total_time) / float(time_count))
+    print('Average DBF time: ', float(total_time) / float(time_count))
 
     return aps, mAP, pr_curves
-
-
-def parse_alfa_parameters_json(alfa_parameters_json):
-    with open(alfa_parameters_json, 'r') as f:
-        alfa_parameters_dict = json.load(f)
-    return alfa_parameters_dict
-
-
-def check_flag(value):
-    if value in ['True', 'False']:
-        if value == True:
-            return True
-        else:
-            return False
-    else:
-        raise argparse.ArgumentTypeError('%s is an invalid flag value, use \"True\" or \"False\"!' % value)
 
 
 def parse_arguments(argv):
@@ -156,7 +139,7 @@ def parse_arguments(argv):
                         help='File where images filenames to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/imagesnames_2012_test.txt\"')
     parser.add_argument('--test_pickled_annots_filename', type=str,
                         help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2012_test.pkl\"')
-    parser.add_argument('--parameters_json', required=True, type=str,
+    parser.add_argument('--dbf_parameters_json', required=True, type=str,
                         help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
                              'n in the paper, '
                              'single, if true computes ALFA prediction for mAP-s computation refered in paper, '
@@ -171,19 +154,31 @@ def parse_arguments(argv):
 
 def main(args):
 
-    alfa_parameters_dict = parse_alfa_parameters_json(args.alfa_parameters_json)
-    pprint.pprint(alfa_parameters_dict)
+    dbf_parameters_dict = parse_parameters_json(args.dbf_parameters_json)
+    pprint.pprint(dbf_parameters_dict)
 
-    detectors_detections = read_detectors_detections(alfa_parameters_dict['detections_filenames'])
+    validation_detectors_detections = read_detectors_detections(dbf_parameters_dict['validation_detections_filenames'])
 
-    annotations_dir = os.path.join(args.dataset_dir, 'Annotations/')
-    images_dir = os.path.join(args.dataset_dir, 'JPEGImages/')
+    annotations_dir = os.path.join(args.validation_dataset_dir, 'Annotations/')
+    images_dir = os.path.join(args.validation_dataset_dir, 'JPEGImages/')
 
-    imagenames = read_imagenames(args.imagenames_filename, images_dir)
-    annotations = read_annotations(args.pickled_annots_filename, annotations_dir, imagenames, args.dataset_name)
+    validation_imagenames = read_imagenames(args.validation_imagenames_filename, images_dir)
+    validation_annotations = read_annotations(args.validation_pickled_annots_filename, annotations_dir,
+                                              validation_imagenames, args.dataset_name)
 
-    validate_DBF(args.dataset_name, args.dataset_dir, imagenames,
-                    annotations, detectors_detections, alfa_parameters_dict, args.map_iou_threshold,
+    annotations_dir = os.path.join(args.test_dataset_dir, 'Annotations/')
+    images_dir = os.path.join(args.test_dataset_dir, 'JPEGImages/')
+
+    test_imagenames = read_imagenames(args.test_imagenames_filename, images_dir)
+    test_annotations = read_annotations(args.test_pickled_annots_filename, annotations_dir,
+                                              test_imagenames, args.dataset_name)
+
+    test_detectors_detections = read_detectors_detections(dbf_parameters_dict['test_detections_filenames'])
+
+
+    validate_DBF(args.dataset_name, args.validation_dataset_dir, validation_imagenames,
+                    validation_annotations, validation_detectors_detections, args.test_dataset_dir, test_imagenames,
+                 test_annotations, test_detectors_detections, dbf_parameters_dict, args.map_iou_threshold,
                   args.output_filename)
 
 

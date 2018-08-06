@@ -2,6 +2,7 @@ import pickle
 import os
 import sys
 import xml.etree.ElementTree as ET
+import json
 
 
 def parse_pascal_voc_rec(filename):
@@ -141,3 +142,19 @@ def read_detectors_detections(detections_filenames):
             print('All detections files should provide detections for the same amount of images with same names!')
             exit(1)
     return detectors_full_detections
+
+
+def parse_parameters_json(parameters_json):
+    with open(parameters_json, 'r') as f:
+        parameters_dict = json.load(f)
+    return parameters_dict
+
+
+def check_flag(value):
+    if value in ['True', 'False']:
+        if value == True:
+            return True
+        else:
+            return False
+    else:
+        raise argparse.ArgumentTypeError('%s is an invalid flag value, use \"True\" or \"False\"!' % value)
