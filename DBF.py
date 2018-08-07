@@ -5,8 +5,8 @@ from reading_methods import dataset_classnames
 from NMS import bboxes_nms
 
 class DBF:
-    def __init__(self, all_detectors_names, validation_dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations,
-                 validation_detectors_detections, map_iou_threshold):
+    def __init__(self, all_detectors_names, validation_dataset_name, validation_dataset_dir, validation_imagenames,
+                 validation_annotations, validation_detectors_detections, map_iou_threshold):
         self.all_detectors_names = list(all_detectors_names)
 
         self.epsilon = 1e-4

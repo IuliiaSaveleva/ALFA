@@ -7,8 +7,9 @@ import pprint
 import os
 
 from sklearn.model_selection import KFold
-from validate_ALFA import validate_ALFA, read_detectors_detections, parse_parameters_json
-from reading_methods import read_imagenames, read_annotations
+from validate_ALFA import validate_ALFA
+from reading_methods import read_imagenames, read_annotations, read_detectors_detections, parse_parameters_json,\
+    get_detections_by_imagenames
 
 
 def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_detections,
@@ -68,13 +69,6 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
         print('Fold number:', fold_index)
         fold_imagenames = imagenames[test_index]
 
-        def get_detections_by_imagenames(full_detections, imagenames):
-            new_full_detections = []
-            for detection in full_detections:
-                if detection[0] in imagenames:
-                    new_full_detections.append(detection)
-            return new_full_detections
-
         detectors_fold_detections = {}
         for key in detectors_detections.keys():
             detector_fold_detections = get_detections_by_imagenames(detectors_detections[key], fold_imagenames)
@@ -129,7 +123,7 @@ def parse_arguments(argv):
                              'all parametes should be of the same amount as folds count')
     parser.add_argument('--map_iou_threshold', type=float,
                         help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
-    parser.add_argument('--folds_count', required=True, type=int,
+    parser.add_argument('--folds_count', type=int,
                         help='If used, computes ALFA prediction for mAP-s computation refered in paper, default=5',
                         default=5)
     return parser.parse_args(argv)

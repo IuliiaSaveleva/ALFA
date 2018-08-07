@@ -66,8 +66,8 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
             weighted map on a part of dataset
     """
 
-    dbf = DBF(validation_detectors_detections.keys(), dataset_name, validation_dataset_dir, validation_imagenames, validation_annotations,
-              validation_detectors_detections, map_iou_threshold)
+    dbf = DBF(validation_detectors_detections.keys(), dataset_name, validation_dataset_dir, validation_imagenames,
+              validation_annotations, validation_detectors_detections, map_iou_threshold)
     map_computation = Computation_mAP(None)
 
     total_time = 0
@@ -142,13 +142,13 @@ def parse_arguments(argv):
     parser.add_argument('--dbf_parameters_json', required=True, type=str,
                         help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
                              'n in the paper, '
-                             'single, if true computes ALFA prediction for mAP-s computation refered in paper, '
+                             'single, if true computes DBF prediction for mAP-s computation refered in paper, '
                              'select_threshold is the confidence threshold for detections, '
                              'detections_filenames list of pickles that store detections for mAP computation')
     parser.add_argument('--map_iou_threshold', type=float,
                         help='Jaccard coefficient value to compute mAP, default=0.5', default=0.5)
     parser.add_argument('--output_filename', type=str,
-                        help='Pickle to store ALFA output. It has the same format, as base detector\'s pickles')
+                        help='Pickle to store DBF output. It has the same format, as base detector\'s pickles')
     return parser.parse_args(argv)
 
 

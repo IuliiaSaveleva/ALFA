@@ -3,6 +3,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 import json
+import  argparse
 
 
 def parse_pascal_voc_rec(filename):
@@ -158,3 +159,11 @@ def check_flag(value):
             return False
     else:
         raise argparse.ArgumentTypeError('%s is an invalid flag value, use \"True\" or \"False\"!' % value)
+
+
+def get_detections_by_imagenames(full_detections, imagenames):
+    new_full_detections = []
+    for detection in full_detections:
+        if detection[0] in imagenames:
+            new_full_detections.append(detection)
+    return new_full_detections
