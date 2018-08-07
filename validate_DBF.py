@@ -112,7 +112,7 @@ def validate_DBF(dataset_name, validation_dataset_dir, validation_imagenames, va
 
     if output_filename is not None:
         with open(output_filename, 'wb') as f:
-            pickle.dump(dbf_detections, f)
+            pickle.dump(dbf_detections, f, protocol=2)
 
     aps, mAP, pr_curves = map_computation.compute_map(dataset_name, test_dataset_dir, test_imagenames,
                                             test_annotations, dbf_detections, map_iou_threshold,

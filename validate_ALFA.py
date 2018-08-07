@@ -122,7 +122,7 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
 
     if output_filename is not None:
         with open(output_filename, 'wb') as f:
-            pickle.dump(alfa_full_detections, f)
+            pickle.dump(alfa_full_detections, f, protocol=2)
 
     aps, mAP, pr_curves = map_computation.compute_map(dataset_name, dataset_dir, imagenames,
                                             annotations, alfa_full_detections, map_iou_threshold,
