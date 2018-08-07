@@ -46,14 +46,8 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
         """
 
     imagenames = sorted(imagenames)
-    # imagenames = np.array(imagenames)
-    # random.seed(123)
-    # random_indices = random.sample(range(len(imagenames)), len(imagenames))
-    # imagenames = imagenames[random_indices]
+    imagenames = np.array(imagenames)
 
-    map_computation = Computation_mAP(None)
-
-    imagenames = sorted(imagenames)
     kf = KFold(n_splits=folds_count)
     fold_index = 0
     aps_per_fold = []
@@ -62,10 +56,8 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
         print('Fold number:', fold_index)
 
         training_imagenames = imagenames[train_index]
-        training_annotations = annotations[train_index]
 
         test_imagenames = imagenames[test_index]
-        test_annotations = annotations[test_index]
 
         detectors_training_detections = {}
         for key in detectors_detections.keys():
@@ -77,8 +69,8 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
             detector_test_detections = get_detections_by_imagenames(detectors_detections[key], test_imagenames)
             detectors_test_detections[key] = detector_test_detections
 
-        aps, _, _ = validate_DBF(dataset_name, dataset_dir, training_imagenames, training_annotations,
-                                 detectors_training_detections, dataset_dir, test_imagenames, test_annotations,
+        aps, _, _ = validate_DBF(dataset_name, dataset_dir, training_imagenames, annotations,
+                                 detectors_training_detections, dataset_dir, test_imagenames, annotations,
                                  detectors_test_detections, dbf_parameters_dict, map_iou_threshold, weighted_map=True,
                                  full_imagenames=imagenames)
 
@@ -127,7 +119,7 @@ def main(args):
     dbf_parameters_dict = parse_parameters_json(args.dbf_parameters_json)
     pprint.pprint(dbf_parameters_dict)
 
-    detectors_detections = read_detectors_detections(dbf_parameters_dict['detections_filenames'])
+    detectors_detections = read_detectors_detections(dbf_parameters_dict['validation_detections_filenames'])
 
     cross_validate_ALFA(args.dataset_name, args.dataset_dir, imagenames, annotations, detectors_detections,
                         dbf_parameters_dict, args.map_iou_threshold, args.folds_count)
