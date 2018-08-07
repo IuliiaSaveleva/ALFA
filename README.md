@@ -10,9 +10,12 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper:
 
+
+
+
 ### ALFA
 
-* get ALFA detections running the following command:
+* compute ALFA mAP running the following command:
 ```bash
 python ./cross_validate_ALFA.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \

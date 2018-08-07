@@ -3,8 +3,8 @@ import argparse
 import numpy as np
 import pprint
 import os
-
 from sklearn.model_selection import KFold
+
 from validate_ALFA import validate_ALFA
 from reading_methods import read_imagenames, read_annotations, read_detectors_detections, parse_parameters_json,\
     get_detections_by_imagenames

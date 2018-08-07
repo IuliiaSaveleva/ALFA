@@ -128,7 +128,7 @@ def validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, detectors_
                                             annotations, alfa_full_detections, map_iou_threshold,
                                                       weighted_map, full_imagenames)
 
-    print('Average ensemble time: ', float(total_time) / float(time_count))
+    print('Average ALFA time: ', float(total_time) / float(time_count))
 
     return aps, mAP, pr_curves
 
