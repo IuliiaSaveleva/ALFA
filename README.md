@@ -431,9 +431,9 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 --submission_folder="path/to/submission_folder"
 ```
 
-* Archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder/results" as .tar.gz
 
-* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder/results.tar.gz" to PASCAL VOC 2012 evaluation server
 
 ### ALFA
 
@@ -512,9 +512,9 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 --submission_folder="path/to/submission_folder"
 ```
 
-* Archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder/results" as .tar.gz
 
-* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder/results.tar.gz" to PASCAL VOC 2012 evaluation server
 
 ### DBF
 
@@ -580,9 +580,9 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 --submission_folder="path/to/submission_folder"
 ```
 
-* Archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder/results" as .tar.gz
 
-* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder/results.tar.gz" to PASCAL VOC 2012 evaluation server
 
 
 ### NMS
@@ -646,6 +646,6 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 --submission_folder="path/to/submission_folder"
 ```
 
-* Archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder/results" as .tar.gz
 
-* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder/results.tar.gz" to PASCAL VOC 2012 evaluation server
