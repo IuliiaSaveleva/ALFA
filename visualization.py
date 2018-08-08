@@ -30,7 +30,7 @@ def list_image_sets():
         'tvmonitor']
 
 
-def plt_bboxes_different_detectors(img, classes_dict, scores_dict, iou_dict, bboxes_dict, figsize=(10,10), linewidth=3.0):
+def plt_bboxes_different_detectors(img, classes_dict, scores_dict, iou_dict, bboxes_dict, figsize=(10,10), linewidth=2.0):
     """Visualize bounding boxes. Largely inspired by SSD-MXNET!
     """
     class_names = list_image_sets()
