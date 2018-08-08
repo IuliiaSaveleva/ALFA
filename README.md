@@ -138,6 +138,44 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
 You will need to download PASCAL VOC 2007 dataset and change "path/to/VOC2007 test/VOC2007" according to location of
 dataset on your computer.
 
+### Base Detectors
+
+To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
+
+```bash
+python ./cross_validate_base_detector.py \
+--dataset_dir="path/to/VOC2007 test/VOC2007" \
+--imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
+--detections_filename="./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
+```
+
+To get different detectors results use detections paths from the table:
+
+<table>
+    <thead>
+        <tr>
+            <th>Detector</th>
+            <th>Detections</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>SSD</th>
+            <th><sub>./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl</sub></th>
+        </tr>
+        <tr>
+            <th>DeNet</th>
+            <th><sub>./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl</sub></th>
+        </tr>
+        <tr>
+            <th>Faster R-CNN</th>
+            <th><sub>./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl</sub></th>
+        </tr>
+    </tbody>
+</table>
+
+
 ### ALFA
 
 * To compute fps results:
@@ -349,11 +387,49 @@ To get different detectors combinations results in NMS use parameters from the t
 You can reproduce the results of algorithms on PASCAL VOC 2012.
 
 You will need to download PASCAL VOC 2007 and PASCAL VOC 2012 dataset and change "path/to/VOC2007 test/VOC2007",
- anf "path/to/VOC2012 test/VOC2012" according to location of dataset on your computer.
+ and "path/to/VOC2012 test/VOC2012" according to location of dataset on your computer.
+
+### Base Detectors
+
+* Take "detections_path.pkl" from the table:
+
+<table>
+    <thead>
+        <tr>
+            <th>Detector</th>
+            <th>Detections</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th>SSD</th>
+            <th><sub>./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl</sub></th>
+        </tr>
+        <tr>
+            <th>DeNet</th>
+            <th><sub>./DeNet_detections/DeNet_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl</sub></th>
+        </tr>
+        <tr>
+            <th>Faster R-CNN</th>
+            <th><sub>./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2012_test.pkl</sub></th>
+        </tr>
+    </tbody>
+</table>
+
+* Convert "detections_path.pkl" to PASCAL VOC 2012 submission format by running:
+```bash
+python ./detections_to_PASCAL_VOC_2012_submission.py \
+--detections_filename="detections_path.pkl" \
+--submission_folder="path/to/submission_folder"
+```
+
+* Archive "path/to/submission_folder" as .tar.gz
+
+* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
 
 ### ALFA
 
-* get ALFA detections running the following command:
+* Get ALFA detections running the following command:
 ```bash
 python ./validate_ALFA.py \
 --dataset_dir="path/to/VOC2012 test/VOC2012" \
@@ -421,20 +497,20 @@ To get different detectors combinations results in both ALFA and Fast ALFA use p
 </table>
 
 
-* convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
+* Convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
 --detections_filename="path/to/output_filename.pkl" \
 --submission_folder="path/to/submission_folder"
 ```
 
-* archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder" as .tar.gz
 
-* upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
 
 ### DBF
 
-* get DBF detections running the following command:
+* Get DBF detections running the following command:
 ```bash
 python ./validate_DBF.py \
 --validation_dataset_dir="path/to/VOC2007 test/VOC2007" \
@@ -489,21 +565,21 @@ To get different detectors combinations results in DBF use parameters from the t
     </tbody>
 </table>
 
-* convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
+* Convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
 --detections_filename="path/to/output_filename.pkl" \
 --submission_folder="path/to/submission_folder"
 ```
 
-* archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder" as .tar.gz
 
-* upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
 
 
 ### NMS
 
-* get NMS detections running the following command:
+* Get NMS detections running the following command:
 ```bash
 python ./validate_NMS.py \
 --dataset_dir="path/to/VOC2012 test/VOC2012" \
@@ -555,13 +631,13 @@ To get different detectors combinations results in NMS use parameters from the t
     </tbody>
 </table>
 
-* convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
+* Convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
 --detections_filename="path/to/output_filename.pkl" \
 --submission_folder="path/to/submission_folder"
 ```
 
-* archive "path/to/submission_folder" as .tar.gz
+* Archive "path/to/submission_folder" as .tar.gz
 
-* upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
+* Upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
