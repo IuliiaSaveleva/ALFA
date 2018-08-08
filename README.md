@@ -51,7 +51,7 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
             <th>72.10</th>
         </tr>
         <tr>
-            <th rowspan=6>SSD + DeNet</th>
+            <th colspan=6>SSD + DeNet</th>
         </tr>
     </tbody>
 </table>
