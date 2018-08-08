@@ -211,10 +211,10 @@ To get different detectors combinations results in both ALFA and Fast ALFA use p
 
 ```bash
 python ./validate_DBF.py \
---validation_dataset_dir="../VOC2007 test/VOC2007" \
+--validation_dataset_dir="path/to/VOC2007 test/VOC2007" \
 --validation_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---test_dataset_dir="../VOC2007 test/VOC2007" \
+--test_dataset_dir="path/to/VOC2007 test/VOC2007" \
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
@@ -426,10 +426,10 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 * get DBF detections running the following command:
 ```bash
 python ./validate_DBF.py \
---validation_dataset_dir="../VOC2007 test/VOC2007" \
+--validation_dataset_dir="path/to/VOC2007 test/VOC2007" \
 --validation_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---test_dataset_dir="../VOC2012 test/VOC2012" \
+--test_dataset_dir="path/to/VOC2012 test/VOC2012" \
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
 --dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json" \
@@ -495,7 +495,7 @@ python ./detections_to_PASCAL_VOC_2012_submission.py \
 * get NMS detections running the following command:
 ```bash
 python ./validate_NMS.py \
---dataset_dir="../VOC2012 test/VOC2012" \
+--dataset_dir="path/to/VOC2012 test/VOC2012" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
 --nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json" \
