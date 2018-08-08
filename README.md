@@ -120,7 +120,7 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
     </tbody>
 </table>
 
-This repository was tested on python 2.7 and 3.5, operation system Xubuntu and Mac OS.
+This repository was tested on python 2.7 and 3.5, operation system Linux and Mac OS.
 
 ## Draw image from paper
 
