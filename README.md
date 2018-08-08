@@ -123,6 +123,9 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper.
 
+You will need to download PASCAL VOC 2007 dataset and change "path/to/VOC2007 test/VOC2007" according to location of
+dataset on your computer.
+
 ### ALFA
 
 * To compute fps results:
@@ -331,6 +334,9 @@ To get different detectors combinations results in NMS use parameters from the t
 ## Evaluate on PASCAL VOC 2012
 
 You can reproduce the results of algorithms on PASCAL VOC 2012.
+
+You will need to download PASCAL VOC 2007 and PASCAL VOC 2012 dataset and change "path/to/VOC2007 test/VOC2007",
+ anf "path/to/VOC2012 test/VOC2012" according to location of dataset on your computer.
 
 ### ALFA
 
