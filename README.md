@@ -132,6 +132,12 @@ dataset on your computer.
 
 ### ALFA
 
+* To draw image from paper:
+```bash
+python ./draw_paper_pic.py \
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+```
+
 * To compute fps results:
 ```bash
 python ./validate_ALFA.py \
