@@ -6,6 +6,7 @@ The paper "ALFA: Agglomerative Late Fusion Algorithm for Object Detection" is ac
 to ICPR 2018, the link will be added here as soon as the paper become available.
 
 ![](paper_image/ALFA_result.png "ALFA result")
+
 Image from PASCAL VOC 2007 test set.
 Bounding boxes and IoU with ground truth:
 DeNet – red (IoU = 0.75);
