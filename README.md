@@ -139,11 +139,8 @@ python ./cross_validate_ALFA.py \
         <tr>
             <th rowspan=2>Algorithm</th>
             <th colspan=2>PASCAL VOC 2007</th>
-            <th colspan=2>PASCAL VOC 2012</th>
         </tr>
         <tr>
-            <th>mAP-s(%)</th>
-            <th>mAP(%)</th>
             <th>mAP-s(%)</th>
             <th>mAP(%)</th>
         </tr>
@@ -156,15 +153,11 @@ python ./cross_validate_ALFA.py \
             <th>Fast ALFA</th>
             <th>SSD_DeNet_0.05_single_cross_validation_parameters_2007.json</th>
             <th>SSD_DeNet_0.05_multiple_cross_validation_parameters_2007.json</th>
-            <th>SSD_DeNet_0.05_single_cross_validation_parameters_2012.json</th>
-            <th>SSD_DeNet_0.05_multiple_cross_validation_parameters_2012.json</th>
         </tr>
         <tr>
             <th>ALFA</th>
             <th>SSD_DeNet_0.015_single_cross_validation_parameters_2007.json</th>
             <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2007.json</th>
-            <th>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</th>
-            <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</th>
         </tr>
             <th colspan=6>SSD + DeNet + Faster R-CNN</th>
         </tr>
@@ -172,18 +165,11 @@ python ./cross_validate_ALFA.py \
             <th>Fast ALFA</th>
             <th>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2007.json</th>
             <th>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2007.json</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2012.json</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2012.json</th>
         </tr>
         <tr>
             <th>ALFA</th>
             <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2007.json</th>
             <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2007.json</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</th>
-        </tr>
-            <th colspan=6>SSD + DeNet + Faster R-CNN</th>
-        </tr>
     </tbody>
 </table>
 
@@ -211,16 +197,47 @@ python ./validate_ALFA.py \
 --output_filename="path/to/output_filename.pkl"
 ```
 
-| Algorithm | Detectors  | Single detections | Parameters |
-|--------|:---------:|:------:| :------:|
-| Fast ALFA | SSD + DeNet | Yes  | SSD_DeNet_0.05_single_cross_validation_parameters_2012.json |
-| ALFA | SSD + DeNet | Yes |  SSD_DeNet_0.015_single_cross_validation_parameters_2012.json |
-| Fast ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2012.json |
-| ALFA | SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json |
-| Fast ALFA | SSD + DeNet | No | SSD_DeNet_0.05_multiple_cross_validation_parameters_2012.json |
-| ALFA | SSD + DeNet | No |  SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json |
-| Fast ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2012.json |
-| ALFA | SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json |
+<table>
+    <thead>
+        <tr>
+            <th rowspan=2>Algorithm</th>
+            <th colspan=2>PASCAL VOC 2012</th>
+        </tr>
+        <tr>
+            <th>mAP-s(%)</th>
+            <th>mAP(%)</th>
+            <th>mAP-s(%)</th>
+            <th>mAP(%)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th colspan=5>SSD + DeNet</th>
+        </tr>
+        <tr>
+            <th>Fast ALFA</th>
+            <th>SSD_DeNet_0.05_single_cross_validation_parameters_2012.json</th>
+            <th>SSD_DeNet_0.05_multiple_cross_validation_parameters_2012.json</th>
+        </tr>
+        <tr>
+            <th>ALFA</th>
+            <th>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</th>
+            <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</th>
+        </tr>
+            <th colspan=6>SSD + DeNet + Faster R-CNN</th>
+        </tr>
+        <tr>
+            <th>Fast ALFA</th>
+            <th>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2012.json</th>
+            <th>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2012.json</th>
+        </tr>
+        <tr>
+            <th>ALFA</th>
+            <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</th>
+            <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</th>
+    </tbody>
+</table>
+
 
 * convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
