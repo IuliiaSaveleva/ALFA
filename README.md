@@ -190,11 +190,97 @@ python ./cross_validate_ALFA.py \
 
 ### DBF
 
-In progress...
+python ./cross_validate_DBF.py \
+--dataset_dir="path/to/VOC2007 test/VOC2007" \
+--imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
+--dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+```
+
+<table>
+    <thead>
+        <tr>
+            <th>Algorithm</th>
+            <th>Parameters</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th colspan=2>SSD + DeNet, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th><sub>SSD_DeNet_0.015_single_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=5>SSD + DeNet, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th><sub>SSD_DeNet_0.015_multiple_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+    </tbody>
+</table>
 
 ### NMS
 
-In progress...
+python ./cross_validate_DBF.py \
+--dataset_dir="path/to/VOC2007 test/VOC2007" \
+--imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
+--dbf_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+```
+
+<table>
+    <thead>
+        <tr>
+            <th>Algorithm</th>
+            <th>Parameters</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th colspan=2>SSD + DeNet, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_0.015_single_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=5>SSD + DeNet, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_0.015_multiple_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2007.json</sub></th>
+        </tr>
+    </tbody>
+</table>
 
 ## Evaluate on PASCAL VOC 2012
 
@@ -289,7 +375,7 @@ python ./validate_DBF.py \
 --test_dataset_dir="../VOC2012 test/VOC2012"
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt"
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl"
---dbf_parameters_json="./Cross_validation_parameters/DBF/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json"
+--dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json"
 --output_filename="output.pkl"
 ```
 
@@ -339,4 +425,55 @@ python ./validate_DBF.py \
 
 ### NMS
 
-In progress...
+* get NMS detections running the following command:
+```bash
+python ./validate_NMS.py \
+--dataset_dir="../VOC2012 test/VOC2012"
+--imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt"
+--pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl"
+--nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json"
+--output_filename="output.pkl"
+```
+
+<table>
+    <thead>
+        <tr>
+            <th>Algorithm</th>
+            <th>Parameters</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th colspan=2>SSD + DeNet, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</sub></th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</sub></th>
+        </tr>
+    </tbody>
+</table>
+
+* archive "path/to/submission_folder" as .tar.gz
+
+* upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
