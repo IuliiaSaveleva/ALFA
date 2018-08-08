@@ -11,7 +11,7 @@ Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-val
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper:
 
 | Detector | fps(Hz) |  PASCAL VOC 2007  |  PASCAL VOC 2012  |
-|          |         |:-----------------:|:-----------------:|
+|----------|:-------:|:-----------------:|:-----------------:|
 
 ### ALFA
 
