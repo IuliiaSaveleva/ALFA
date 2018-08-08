@@ -140,7 +140,7 @@ def parse_arguments(argv):
     parser.add_argument('--test_pickled_annots_filename', type=str,
                         help='Pickle where annotations to compute mAP are stored, e.g.=\"./PASCAL_VOC_files/annots_2012_test.pkl\"')
     parser.add_argument('--dbf_parameters_json', required=True, type=str,
-                        help='File from directory \"./Cross_validation_parameters\", that contains parameters:'
+                        help='File from directory \"./Algorithm_parameters\", that contains parameters:'
                              'n in the paper, '
                              'single, if true computes DBF prediction for mAP-s computation refered in paper, '
                              'select_threshold is the confidence threshold for detections, '
