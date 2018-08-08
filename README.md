@@ -131,7 +131,7 @@ python ./cross_validate_ALFA.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
+--alfa_parameters_json="./Algorithm_parameters/*ALFA*/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
 ```
 
 <table>
@@ -208,7 +208,7 @@ python ./validate_ALFA.py \
 --dataset_dir="path/to/VOC2012 test/VOC2012" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
---alfa_parameters_json="./Cross_validation_ALFA_parameters/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \
+--alfa_parameters_json="./Algorithm_parameters/*ALFA*/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \
 --output_filename="path/to/output_filename.pkl"
 ```
 
@@ -290,20 +290,48 @@ python ./validate_DBF.py \
 --test_dataset_dir="../VOC2012 test/VOC2012"
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt"
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl"
---dbf_parameters_json="./Cross_validation_parameters/DBF/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json"
+--dbf_parameters_json="./Cross_validation_parameters/*DBF*/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json"
 --output_filename="output.pkl"
 ```
 
-| Detectors  | Single detections | Parameters |
-|--------|:------:| :------:|
-| SSD + DeNet | Yes  | SSD_DeNet_ALFA_0.05_single_cross_validation_parameters_2012.json |
-| SSD + DeNet | Yes |  SSD_DeNet_ALFA_0.015_single_cross_validation_parameters_2012.json |
-| SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2012.json |
-| SSD + DeNet + Faster R-CNN | Yes | SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json |
-| SSD + DeNet | No | SSD_DeNet_0.05_multiple_cross_validation_parameters_2012.json |
-| SSD + DeNet | No |  SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json |
-| SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2012.json |
-| SSD + DeNet + Faster R-CNN | No | SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json |
+<table>
+    <thead>
+        <tr>
+            <th>Algorithm</th>
+            <th>Parameters</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th colspan=2>SSD + DeNet, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</th>
+        </tr>
+        <tr>
+            <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</th>
+        </tr>
+    </tbody>
+</table>
 
 * archive "path/to/submission_folder" as .tar.gz
 
