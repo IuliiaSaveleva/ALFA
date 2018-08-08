@@ -413,7 +413,7 @@ To get different detectors combinations results in both ALFA and Fast ALFA use p
 * convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
---detections_filename="path/to/output_filename.pkl"
+--detections_filename="path/to/output_filename.pkl" \
 --submission_folder="path/to/submission_folder"
 ```
 
@@ -478,6 +478,13 @@ To get different detectors combinations results in DBF use parameters from the t
     </tbody>
 </table>
 
+* convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
+```bash
+python ./detections_to_PASCAL_VOC_2012_submission.py \
+--detections_filename="path/to/output_filename.pkl" \
+--submission_folder="path/to/submission_folder"
+```
+
 * archive "path/to/submission_folder" as .tar.gz
 
 * upload "path/to/submission_folder.tar.gz" to PASCAL VOC 2012 evaluation server
@@ -536,6 +543,13 @@ To get different detectors combinations results in NMS use parameters from the t
         </tr>
     </tbody>
 </table>
+
+* convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
+```bash
+python ./detections_to_PASCAL_VOC_2012_submission.py \
+--detections_filename="path/to/output_filename.pkl" \
+--submission_folder="path/to/submission_folder"
+```
 
 * archive "path/to/submission_folder" as .tar.gz
 
