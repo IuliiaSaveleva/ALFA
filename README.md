@@ -147,43 +147,43 @@ python ./cross_validate_ALFA.py \
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_0.05_single_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_0.05_single_cross_validation_parameters_2007.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_0.015_single_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_0.015_single_cross_validation_parameters_2007.json</sub></th>
         </tr>
         <tr>
             <th colspan=5>SSD + DeNet, mAP(%)</th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_0.05_multiple_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_0.05_multiple_cross_validation_parameters_2007.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_0.015_multiple_cross_validation_parameters_2007.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2007.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2007.json</sub></th>
         </tr>
             <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2007.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2007.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2007.json</sub></th>
         </tr>
     </tbody>
 </table>
@@ -224,44 +224,44 @@ python ./validate_ALFA.py \
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_0.05_single_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_0.05_single_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet, mAP(%)</th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_0.05_multiple_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_0.05_multiple_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.05_single_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.05_multiple_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</sub></th>
         </tr>
     </tbody>
 </table>
@@ -313,21 +313,21 @@ python ./validate_DBF.py \
         </tr>
         <tr>
             <th>DBF</th>
-            <th>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_0.015_multiple_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet + Faster R-CNN, mAP-s(%)</th>
         </tr>
         <tr>
             <th>DBF</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_single_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet + Faster R-CNN, mAP(%)</th>
         </tr>
         <tr>
             <th>DBF</th>
-            <th>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_Faster_R-CNN_0.015_multiple_cross_validation_parameters_2012.json</sub></th>
         </tr>
     </tbody>
 </table>
