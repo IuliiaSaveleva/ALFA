@@ -93,7 +93,7 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
         </tr>
         <tr>
             <th>DBF</th>
-            <th><sub>4.</sub>7</th>
+            <th><sub>4.7</sub></th>
             <th><sub>84.97</sub></th>
             <th><sub>85.24</sub></th>
             <th><sub>75.71</sub></th>
