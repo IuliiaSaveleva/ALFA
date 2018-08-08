@@ -148,7 +148,9 @@ dataset on your computer.
 
 ### Base Detectors
 
-To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
+* Fps values for base detectors were taken from their papers.
+
+* To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
 
 ```bash
 python ./cross_validate_base_detector.py \
