@@ -10,9 +10,6 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper:
 
-| Detector | fps(Hz) |  PASCAL VOC 2007  |  PASCAL VOC 2012  |
-|----------|:-------:|:-----------------:|:-----------------:|
-
 <table>
     <thead>
         <tr>
@@ -29,6 +26,33 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <th>Faster R-CNN</th>
+            <th>7</th>
+            <th>77.95</th>
+            <th>78.83</th>
+            <th>72.72</th>
+            <th>73.59</th>
+        </tr>
+        <tr>
+            <th>SSD300</th>
+            <th>59</th>
+            <th>79.26</th>
+            <th>80.37</th>
+            <th>72.89</th>
+            <th>74.17</th>
+        </tr>
+        <tr>
+            <th>DeNet</th>
+            <th>33</th>
+            <th>78.09</th>
+            <th>79.26</th>
+            <th>70.73</th>
+            <th>72.10</th>
+        </tr>
+        <tr>
+            <th rowspan=6>SSD + DeNet</th>
+        </tr>
     </tbody>
 </table>
 
