@@ -118,6 +118,7 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
     </tbody>
 </table>
 
+
 ## Evaluate on PASCAL VOC 2007
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
@@ -125,7 +126,6 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
 
 ### ALFA
 
-* compute ALFA mAP running the following command:
 ```bash
 python ./cross_validate_ALFA.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
@@ -190,6 +190,7 @@ python ./cross_validate_ALFA.py \
 
 ### DBF
 
+```bash
 python ./cross_validate_DBF.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
@@ -237,6 +238,7 @@ python ./cross_validate_DBF.py \
 
 ### NMS
 
+```bash
 python ./cross_validate_NMS.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
