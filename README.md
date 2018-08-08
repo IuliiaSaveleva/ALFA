@@ -23,97 +23,97 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
     <tbody>
         <tr>
             <th>Faster R-CNN</th>
-            <th>7</th>
-            <th>77.95</th>
-            <th>78.83</th>
-            <th>72.72</th>
-            <th>73.59</th>
+            <th><sub>7</sub></th>
+            <th><sub>77.95</sub></th>
+            <th><sub>78.83</sub></th>
+            <th><sub>72.72</sub></th>
+            <th><sub>73.59</sub></th>
         </tr>
         <tr>
             <th>SSD300</th>
-            <th>59</th>
-            <th>79.26</th>
-            <th>80.37</th>
-            <th>72.89</th>
-            <th>74.17</th>
+            <th><sub>59</sub></th>
+            <th><sub>79.26</sub></th>
+            <th><sub>80.37</sub></th>
+            <th><sub>72.89</sub></th>
+            <th><sub>74.17</sub></th>
         </tr>
         <tr>
             <th>DeNet</th>
-            <th>33</th>
-            <th>78.09</th>
-            <th>79.26</th>
-            <th>70.73</th>
-            <th>72.10</th>
+            <th><sub>33</sub></th>
+            <th><sub>78.09</sub></th>
+            <th><sub>79.26</sub></th>
+            <th><sub>70.73</sub></th>
+            <th><sub>72.10</sub></th>
         </tr>
         <tr>
             <th colspan=6>SSD + DeNet</th>
         </tr>
         <tr>
             <th>NMS</th>
-            <th>20.3</th>
-            <th>83.12</th>
-            <th>83.53</th>
-            <th>76.80</th>
-            <th>77.37</th>
+            <th><sub>20.3</sub></th>
+            <th><sub>83.12</sub></th>
+            <th><sub>83.53</sub></th>
+            <th><sub>76.80</sub></th>
+            <th><sub>77.37</sub></th>
         </tr>
         <tr>
             <th>DBF</th>
-            <th>16.9</th>
-            <th>83.29</th>
-            <th>83.88</th>
-            <th>75.74</th>
-            <th>76.38</th>
+            <th><sub>16.9</sub></th>
+            <th><sub>83.29</sub></th>
+            <th><sub>83.88</sub></th>
+            <th><sub>75.74</sub></th>
+            <th><sub>76.38</sub></th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>20.6</th>
-            <th>83.87</th>
-            <th>84.32</th>
-            <th>76.97</th>
-            <th>77.82</th>
+            <th><sub>20.6</sub></th>
+            <th><sub>83.87</sub></th>
+            <th><sub>84.32</sub></th>
+            <th><sub>76.97</sub></th>
+            <th><sub>77.82</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>18.1</th>
-            <th>84.16</th>
-            <th>84.41</th>
-            <th>77.52</th>
-            <th>77.98</th>
+            <th><sub>18.1</sub></th>
+            <th><sub>84.16</sub></th>
+            <th><sub>84.41</sub></th>
+            <th><sub>77.52</sub></th>
+            <th><sub>77.98</sub></th>
         </tr>
                 <tr>
             <th colspan=6>SSD + DeNet + Faster R-CNN</th>
         </tr>
         <tr>
             <th>NMS</th>
-            <th>5.2</th>
-            <th>84.31</th>
-            <th>84.43</th>
-            <th>78.11</th>
-            <th>78.34</th>
+            <th><sub>5.2</sub></th>
+            <th><sub>84.31</sub></th>
+            <th><sub>84.43</sub></th>
+            <th><sub>78.11</sub></th>
+            <th><sub>78.34</sub></th>
         </tr>
         <tr>
             <th>DBF</th>
-            <th>4.7</th>
-            <th>84.97</th>
-            <th>85.24</th>
-            <th>75.71</th>
-            <th>75.69</th>
+            <th><sub>4.</sub>7</th>
+            <th><sub>84.97</sub></th>
+            <th><sub>85.24</sub></th>
+            <th><sub>75.71</sub></th>
+            <th><sub>75.69</sub></th>
         </tr>
         <tr>
             <th>Fast ALFA</th>
-            <th>5.2</th>
-            <th>85.78</th>
-            <th>85.67</th>
-            <th>79.16</th>
-            <th>79.42</th>
+            <th><sub>5.2</sub></th>
+            <th><sub>85.78</sub></th>
+            <th><sub>85.67</sub></th>
+            <th><sub>79.16</sub></th>
+            <th><sub>79.42</sub></th>
         </tr>
         <tr>
             <th>ALFA</th>
-            <th>5.0</th>
-            <th>85.90</th>
-            <th>85.72</th>
-            <th>79.41</th>
-            <th>79.47</th>
+            <th><sub>5.0</sub></th>
+            <th><sub>85.90</sub></th>
+            <th><sub>85.72</sub></th>
+            <th><sub>79.41</sub></th>
+            <th><sub>79.47</sub></th>
         </tr>
     </tbody>
 </table>
