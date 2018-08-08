@@ -118,6 +118,8 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
     </tbody>
 </table>
 
+This repository was tested on python 2.7 and 3.5, operation system Xubuntu and Mac OS.
+
 ## Compute fps results and evaluate on PASCAL VOC 2007
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
@@ -209,12 +211,12 @@ To get different detectors combinations results in both ALFA and Fast ALFA use p
 
 ```bash
 python ./validate_DBF.py \
---validation_dataset_dir="../VOC2007 test/VOC2007"
---validation_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt"
---validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl"
---test_dataset_dir="../VOC2007 test/VOC2007"
---test_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt"
---test_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl"
+--validation_dataset_dir="../VOC2007 test/VOC2007" \
+--validation_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
+--test_dataset_dir="../VOC2007 test/VOC2007" \
+--test_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--test_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
 ```
 
