@@ -12,9 +12,6 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
 
 | Detector | fps(Hz) |  PASCAL VOC 2007  |  PASCAL VOC 2012  |
 |          |         |:-----------------:|:-----------------:|
-|          |         | mAP-s(%) | mAP(%) | mAP-s(%) | mAP(%) |
-|----------|:-------:|:--------:|:------:|:--------:|:------:|
-|          |         |          |        |          |        |
 
 ### ALFA
 
