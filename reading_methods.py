@@ -3,8 +3,8 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 import json
-import  argparse
-
+import argparse
+import cv2
 
 def parse_pascal_voc_rec(filename):
     """ Parse a PASCAL VOC xml file """
@@ -167,3 +167,23 @@ def get_detections_by_imagenames(full_detections, imagenames):
         if detection[0] in imagenames:
             new_full_detections.append(detection)
     return new_full_detections
+
+def read_one_image(image_file):
+    try:
+        img = cv2.imread(image_file)
+        b, g, r = cv2.split(img)
+        img_rgb = cv2.merge((r, g, b))
+    except:
+        print('Error reading image file: ', image_file)
+        img_rgb = None
+    return img_rgb
+
+def read_images(image_files):
+    if isinstance(image_files, str):
+        return read_one_image(image_files)
+    else:
+        images = []
+        for image_file in image_files:
+            images.append(read_one_image(image_file))
+        return images
+    return None
