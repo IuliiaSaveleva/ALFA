@@ -279,7 +279,7 @@ python ./validate_NMS.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dbf_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+--nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
 ```
 
 * To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
@@ -289,7 +289,7 @@ python ./cross_validate_NMS.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dbf_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+--nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
 ```
 
 To get different detectors combinations results in NMS use parameters from the table:
