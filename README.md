@@ -32,7 +32,7 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
             <th><sub>73.59</sub></th>
         </tr>
         <tr>
-            <th>SSD300</th>
+            <th>SSD</th>
             <th><sub>59</sub></th>
             <th><sub>79.26</sub></th>
             <th><sub>80.37</sub></th>
