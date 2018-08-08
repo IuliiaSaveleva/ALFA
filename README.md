@@ -118,13 +118,23 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
     </tbody>
 </table>
 
-
-## Evaluate on PASCAL VOC 2007
+## Compute fps results and evaluate on PASCAL VOC 2007
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper.
 
 ### ALFA
+
+* To compute fps results:
+```bash
+python ./validate_ALFA.py \
+--dataset_dir="path/to/VOC2007 test/VOC2007" \
+--imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
+```
+
+* To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
 
 ```bash
 python ./cross_validate_ALFA.py \
@@ -133,6 +143,8 @@ python ./cross_validate_ALFA.py \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
 ```
+
+To get different detectors combinations results in both ALFA and Fast ALFA use parameters from the table:
 
 <table>
     <thead>
@@ -190,6 +202,21 @@ python ./cross_validate_ALFA.py \
 
 ### DBF
 
+* To compute fps results:
+
+```bash
+python ./validate_DBF.py \
+--validation_dataset_dir="../VOC2007 test/VOC2007"
+--validation_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt"
+--validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl"
+--test_dataset_dir="../VOC2007 test/VOC2007"
+--test_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt"
+--test_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl"
+--dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+```
+
+* To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
+
 ```bash
 python ./cross_validate_DBF.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
@@ -197,6 +224,8 @@ python ./cross_validate_DBF.py \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
 ```
+
+To get different detectors combinations results in DBF use parameters from the table:
 
 <table>
     <thead>
@@ -238,6 +267,18 @@ python ./cross_validate_DBF.py \
 
 ### NMS
 
+* To compute fps results:
+
+```bash
+python ./validate_NMS.py \
+--dataset_dir="path/to/VOC2007 test/VOC2007" \
+--imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
+--pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
+--dbf_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+```
+
+* To get mAP on PASCAL VOC 2007 by 5-fold cross validation:
+
 ```bash
 python ./cross_validate_NMS.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
@@ -245,6 +286,8 @@ python ./cross_validate_NMS.py \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --dbf_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
 ```
+
+To get different detectors combinations results in NMS use parameters from the table:
 
 <table>
     <thead>
@@ -284,11 +327,13 @@ python ./cross_validate_NMS.py \
     </tbody>
 </table>
 
+
 ## Evaluate on PASCAL VOC 2012
 
 You can reproduce the results of algorithms on PASCAL VOC 2012.
 
 ### ALFA
+
 * get ALFA detections running the following command:
 ```bash
 python ./validate_ALFA.py \
@@ -298,6 +343,8 @@ python ./validate_ALFA.py \
 --alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \
 --output_filename="path/to/output_filename.pkl"
 ```
+
+To get different detectors combinations results in both ALFA and Fast ALFA use parameters from the table:
 
 <table>
     <thead>
@@ -381,6 +428,9 @@ python ./validate_DBF.py \
 --output_filename="output.pkl"
 ```
 
+To get different detectors combinations results in DBF use parameters from the table:
+
+
 <table>
     <thead>
         <tr>
@@ -436,6 +486,9 @@ python ./validate_NMS.py \
 --nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json"
 --output_filename="output.pkl"
 ```
+
+To get different detectors combinations results in NMS use parameters from the table:
+
 
 <table>
     <thead>
