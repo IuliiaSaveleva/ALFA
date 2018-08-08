@@ -53,6 +53,73 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
         <tr>
             <th colspan=6>SSD + DeNet</th>
         </tr>
+        <tr>
+            <th>NMS</th>
+            <th>20.3</th>
+            <th>83.12</th>
+            <th>83.53</th>
+            <th>76.80</th>
+            <th>77.37</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th>16.9</th>
+            <th>83.29</th>
+            <th>83.88</th>
+            <th>75.74</th>
+            <th>76.38</th>
+        </tr>
+        <tr>
+            <th>Fast ALFA</th>
+            <th>20.6</th>
+            <th>83.87</th>
+            <th>84.32</th>
+            <th>76.97</th>
+            <th>77.82</th>
+        </tr>
+        <tr>
+            <th>ALFA</th>
+            <th>18.1</th>
+            <th>84.16</th>
+            <th>84.41</th>
+            <th>77.52</th>
+            <th>77.98</th>
+        </tr>
+                <tr>
+            <th colspan=6>SSD + DeNet + Faster R-CNN</th>
+        </tr>
+        <tr>
+            <th>NMS</th>
+            <th>5.2</th>
+            <th>84.31</th>
+            <th>84.43</th>
+            <th>78.11</th>
+            <th>78.34</th>
+        </tr>
+        <tr>
+            <th>DBF</th>
+            <th>4.7</th>
+            <th>84.97</th>
+            <th>85.24</th>
+            <th>75.71</th>
+            <th>75.69</th>
+        </tr>
+        <tr>
+            <th>Fast ALFA</th>
+            <th>5.2</th>
+            <th>85.78</th>
+            <th>85.67</th>
+            <th>79.16</th>
+            <th>79.42</th>
+        </tr>
+        <tr>
+            <th>ALFA</th>
+            <th>5.0</th>
+            <th>85.90</th>
+            <th>85.72</th>
+            <th>79.41</th>
+            <th>79.47</th>
+        </tr>
     </tbody>
 </table>
 
