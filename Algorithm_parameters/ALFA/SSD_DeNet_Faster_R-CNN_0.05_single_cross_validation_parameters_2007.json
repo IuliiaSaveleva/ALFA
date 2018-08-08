@@ -5,7 +5,7 @@
     "./Faster_R-CNN_detections/Faster_R-CNN_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
   ],
   "single": true,
-  "select_threshold": 0.05,
+  "select_threshold": 0.055,
   "main_fold": 0,
   "tau": [
     0.7520381588802675,
