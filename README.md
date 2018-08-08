@@ -131,7 +131,7 @@ python ./cross_validate_ALFA.py \
 --dataset_dir="path/to/VOC2007 test/VOC2007" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---alfa_parameters_json="./Algorithm_parameters/*ALFA*/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
 ```
 
 <table>
@@ -188,7 +188,6 @@ python ./cross_validate_ALFA.py \
     </tbody>
 </table>
 
-
 ### DBF
 
 In progress...
@@ -208,7 +207,7 @@ python ./validate_ALFA.py \
 --dataset_dir="path/to/VOC2012 test/VOC2012" \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
---alfa_parameters_json="./Algorithm_parameters/*ALFA*/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \
 --output_filename="path/to/output_filename.pkl"
 ```
 
@@ -290,7 +289,7 @@ python ./validate_DBF.py \
 --test_dataset_dir="../VOC2012 test/VOC2012"
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt"
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl"
---dbf_parameters_json="./Cross_validation_parameters/*DBF*/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json"
+--dbf_parameters_json="./Cross_validation_parameters/DBF/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json"
 --output_filename="output.pkl"
 ```
 
@@ -307,7 +306,7 @@ python ./validate_DBF.py \
         </tr>
         <tr>
             <th>DBF</th>
-            <th>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</th>
+            <th><sub>SSD_DeNet_0.015_single_cross_validation_parameters_2012.json</sub></th>
         </tr>
         <tr>
             <th colspan=2>SSD + DeNet, mAP(%)</th>
