@@ -122,6 +122,14 @@ to ICPR 2018, the link will be added here as soon as the paper become available.
 
 This repository was tested on python 2.7 and 3.5, operation system Xubuntu and Mac OS.
 
+## Draw image from paper
+
+To draw image from paper:
+```bash
+python ./draw_paper_pic.py \
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
+```
+
 ## Compute fps results and evaluate on PASCAL VOC 2007
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
@@ -131,12 +139,6 @@ You will need to download PASCAL VOC 2007 dataset and change "path/to/VOC2007 te
 dataset on your computer.
 
 ### ALFA
-
-* To draw image from paper:
-```bash
-python ./draw_paper_pic.py \
---alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
-```
 
 * To compute fps results:
 
