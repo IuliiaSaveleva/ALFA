@@ -146,6 +146,8 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
 You will need to download PASCAL VOC 2007 dataset and change "path/to/VOC2007 test/VOC2007" according to location of
 dataset on your computer.
 
+Download this project and unarchive files in "./SSD_Detections", "./DeNet_detections", "./Faster_R-CNN" to run the scripts
+
 ### Base Detectors
 
 * Fps values for base detectors were taken from their papers.
