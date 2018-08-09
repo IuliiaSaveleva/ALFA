@@ -130,6 +130,8 @@ Ground truth bounding box is in white.
 
 This repository was tested on python 2.7 and 3.5, platforms Linux and Mac OS.
 
+Download this project and unarchive files in "./SSD_Detections", "./DeNet_detections", "./Faster_R-CNN" to run the scripts
+
 ## Draw image from paper
 
 To draw image from paper:
@@ -145,8 +147,6 @@ You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be cl
 
 You will need to download PASCAL VOC 2007 dataset and change "path/to/VOC2007 test/VOC2007" according to location of
 dataset on your computer.
-
-Download this project and unarchive files in "./SSD_Detections", "./DeNet_detections", "./Faster_R-CNN" to run the scripts
 
 ### Base Detectors
 
