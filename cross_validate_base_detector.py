@@ -1,7 +1,8 @@
 import argparse
 import sys
 import os
-import  numpy as np
+import numpy as np
+import random
 from sklearn.model_selection import KFold
 
 from map_computation import Computation_mAP
@@ -36,8 +37,12 @@ def cross_validate_base_detector(dataset_name, dataset_dir, imagenames, annotati
         Number of folds to cross-validate
     """
 
-    imagenames = sorted(imagenames)
+    # imagenames = sorted(imagenames)
     imagenames = np.array(imagenames)
+    random.seed(123)
+    random_indices = random.sample(range(len(imagenames)), len(imagenames))
+    imagenames = imagenames[random_indices]
+
 
     kf = KFold(n_splits=folds_count)
     fold_index = 0

@@ -4,6 +4,7 @@ import numpy as np
 import argparse
 import pprint
 import sys
+import random
 
 from map_computation import Computation_mAP
 from reading_methods import read_imagenames, read_annotations, read_detectors_detections, parse_parameters_json, \
@@ -45,8 +46,12 @@ def cross_validate_ALFA(dataset_name, dataset_dir, imagenames, annotations, dete
             Number of folds to cross-validate
         """
 
-    imagenames = sorted(imagenames)
+    # imagenames = sorted(imagenames)
     imagenames = np.array(imagenames)
+    random.seed(123)
+    random_indices = random.sample(range(len(imagenames)), len(imagenames))
+    imagenames = imagenames[random_indices]
+
 
     kf = KFold(n_splits=folds_count)
     fold_index = 0

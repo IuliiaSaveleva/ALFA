@@ -130,7 +130,7 @@ Ground truth bounding box is in white.
 
 This repository was tested on python 2.7 and 3.5, platforms Linux and Mac OS.
 
-Download this project and unarchive files in "./SSD_Detections", "./DeNet_detections", "./Faster_R-CNN" to run the scripts
+Download this project and unarchive files in "./SSD_Detections", "./DeNet_detections", "./Faster_R-CNN_detections" to run the scripts
 
 ## Draw image from paper
 
