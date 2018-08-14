@@ -140,7 +140,7 @@ python ./draw_paper_pic.py \
 --alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
 ```
 
-## Compute fps results and evaluate on PASCAL VOC 2007
+## Compute fps and evaluate on PASCAL VOC 2007
 
 Results on PASCAL VOC 2007 are not reproducible due to randomness of a cross-validation procedure.
 You can evaluate algorithms on PASCAL VOC 2007 and get results, that would be close to the results in paper.
@@ -190,7 +190,7 @@ To get different detectors results use detections paths from the table:
 
 ### ALFA
 
-* To compute fps results:
+* To compute fps:
 
 ```bash
 python ./validate_ALFA.py \
@@ -268,7 +268,7 @@ To get different detectors combinations results in both ALFA and Fast ALFA use p
 
 ### DBF
 
-* To compute fps results:
+* To compute fps:
 
 ```bash
 python ./validate_DBF.py \
@@ -333,7 +333,7 @@ To get different detectors combinations results in DBF use parameters from the t
 
 ### NMS
 
-* To compute fps results:
+* To compute fps:
 
 ```bash
 python ./validate_NMS.py \

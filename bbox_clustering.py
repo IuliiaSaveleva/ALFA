@@ -93,7 +93,7 @@ class BoxClustering:
         if self.use_BC:
             bc = fastBC(self.only_object_scores)
             self.sim_matrix = np.power(self.sim_matrix, self.power_iou) * np.power(bc, 1.0 - self.power_iou)
-        
+
         self.path_matrix = np.greater_equal(self.sim_matrix, self.hard_threshold).astype(int)
 
 
