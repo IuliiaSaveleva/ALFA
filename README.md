@@ -145,8 +145,7 @@ Download PASCAL VOC 2007 and PASCAL VOC 2012 dataset and change "path/to/VOC2007
 To draw image from paper:
 ```bash
 python ./draw_paper_pic.py \
---alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
-```
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"```
 
 
 ## Reproduce fps and PASCAL VOC 2007 results
@@ -163,13 +162,10 @@ Results on PASCAL VOC 2007 differ slightly from paper results due to randomness 
 python ./cross_validate_base_detector.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
-
---detections_filename="./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"
-```
+--detections_filename="./SSD_detections/SSD_ovthresh_0.015_single_detections_PASCAL_VOC_2007_test.pkl"```
 Change --detections_filename to path from table below.
 
 <table>
@@ -203,12 +199,10 @@ Change --detections_filename to path from table below.
 python ./validate_ALFA.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
-```
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"```
 Change last part of the path --alfa_parameters_json to value from table below.
 
 * Evaluate on PASCAL VOC 2007
@@ -217,12 +211,10 @@ Change last part of the path --alfa_parameters_json to value from table below.
 python ./cross_validate_ALFA.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"
-```
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2007.json"```
 Change last part of the path --alfa_parameters_json to value from table below.
 
 <table>
@@ -289,16 +281,13 @@ python ./validate_DBF.py \
 --validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---validation_dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--validation_dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --validation_dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---test_dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--test_dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --test_dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
-```
+--dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"```
 Change last part of the path --dbf_parameters_json to value from table below.
 
 * Evaluate on PASCAL VOC 2007
@@ -307,12 +296,10 @@ Change last part of the path --dbf_parameters_json to value from table below.
 python ./cross_validate_DBF.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
-```
+--dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"```
 Change last part of the path --dbf_parameters_json to value from table below.
 
 <table>
@@ -361,12 +348,10 @@ Change last part of the path --dbf_parameters_json to value from table below.
 python ./validate_NMS.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
-```
+--nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"```
 Change last part of the path --nms_parameters_json to value from table below.
 
 * Evaluate on PASCAL VOC 2007
@@ -375,12 +360,10 @@ Change last part of the path --nms_parameters_json to value from table below.
 python ./cross_validate_NMS.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2007_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
---dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --dataset_dir value to real path /VOC2007 test/VOC2007 then type:
 ```bash
---nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"
-```
+--nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2007.json"```
 Change last part of the path --nms_parameters_json to value from table below.
 
 <table>
@@ -429,12 +412,10 @@ Change last part of the path --nms_parameters_json to value from table below.
 * Convert "detections_path.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
---detections_filename="detections_path.pkl" \
-```
+--detections_filename="detections_path.pkl" \```
 Change --detections_filename value from table below then type:
 ```bash
---submission_folder="path/to/submission_folder"
-```
+--submission_folder="path/to/submission_folder"```
 Change --submission_folder value to real path on your computer
 
 <table>
@@ -471,16 +452,13 @@ Change --submission_folder value to real path on your computer
 python ./validate_ALFA.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
---dataset_dir="path/to/VOC2012 test/VOC2012" \
-```
+--dataset_dir="path/to/VOC2012 test/VOC2012" \```
 Change --dataset_dir value to real path to /VOC2012 test/VOC2012 then type:
 ```bash
---alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \
-```
+--alfa_parameters_json="./Algorithm_parameters/ALFA/SSD_DeNet_0.05_single_cross_validation_parameters_2012.json" \```
 Change --alfa_parameters_json to value value from table below then type:
 ```bash
---output_filename="path/to/output_filename.pkl"
-```
+--output_filename="path/to/output_filename.pkl"```
 Change --output_filename to real path on your computer
 
 <table>
@@ -542,12 +520,10 @@ Change --output_filename to real path on your computer
 * Convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
---detections_filename="detections_path.pkl" \
-```
+--detections_filename="detections_path.pkl" \```
 Change --detections_filename value from table below then type:
 ```bash
---submission_folder="path/to/submission_folder"
-```
+--submission_folder="path/to/submission_folder"```
 Change --submission_folder value to real path on your computer
 
 * Archive "path/to/submission_folder/results" as .tar.gz
@@ -563,20 +539,16 @@ python ./validate_DBF.py \
 --validation_pickled_annots_filename="./PASCAL_VOC_files/annots_2007_test.pkl" \
 --test_imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --test_pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
---validation_dataset_dir="path/to/VOC2007 test/VOC2007" \
-```
+--validation_dataset_dir="path/to/VOC2007 test/VOC2007" \```
 Change --validation_dataset_dir value to real path to /VOC2007 test/VOC2007 then type:
 ```bash
---test_dataset_dir="path/to/VOC2012 test/VOC2012" \
-```
+--test_dataset_dir="path/to/VOC2012 test/VOC2012" \```
 Change --test_dataset_dir value to real path to /VOC2012 test/VOC2012 then type:
 ```bash
---dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json" \
-```
+--dbf_parameters_json="./Algorithm_parameters/DBF/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json" \```
 Change --dbf_parameters_json to value value from table below then type:
 ```bash
---output_filename="path/to/output_filename.pkl"
-```
+--output_filename="path/to/output_filename.pkl"```
 Change --output_filename to real path on your computer
 
 <table>
@@ -621,12 +593,10 @@ Change --output_filename to real path on your computer
 * Convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
---detections_filename="detections_path.pkl" \
-```
+--detections_filename="detections_path.pkl" \```
 Change --detections_filename value from table below then type:
 ```bash
---submission_folder="path/to/submission_folder"
-```
+--submission_folder="path/to/submission_folder"```
 Change --submission_folder value to real path on your computer
 
 * Archive "path/to/submission_folder/results" as .tar.gz
@@ -641,16 +611,13 @@ Change --submission_folder value to real path on your computer
 python ./validate_NMS.py \
 --imagenames_filename="./PASCAL_VOC_files/imagenames_2012_test.txt" \
 --pickled_annots_filename="./PASCAL_VOC_files/annots_2012_test.pkl" \
---dataset_dir="path/to/VOC2012 test/VOC2012" \
-```
+--dataset_dir="path/to/VOC2012 test/VOC2012" \```
 Change --dataset_dir value to real path to /VOC2012 test/VOC2012 then type:
 ```bash
---nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json" \
-```
+--nms_parameters_json="./Algorithm_parameters/NMS/SSD_DeNet_0.015_single_cross_validation_parameters_2012.json" \```
 Change --nms_parameters_json to value value from table below then type:
 ```bash
---output_filename="path/to/output_filename.pkl"
-```
+--output_filename="path/to/output_filename.pkl"```
 Change --output_filename to real path on your computer
 
 To get different detectors combinations results in NMS use parameters from the table:
@@ -698,12 +665,10 @@ To get different detectors combinations results in NMS use parameters from the t
 * Convert "path/to/output_filename.pkl" to PASCAL VOC 2012 submission format by running:
 ```bash
 python ./detections_to_PASCAL_VOC_2012_submission.py \
---detections_filename="detections_path.pkl" \
-```
+--detections_filename="detections_path.pkl" \```
 Change --detections_filename value from table below then type:
 ```bash
---submission_folder="path/to/submission_folder"
-```
+--submission_folder="path/to/submission_folder"```
 Change --submission_folder value to real path on your computer
 
 * Archive "path/to/submission_folder/results" as .tar.gz
