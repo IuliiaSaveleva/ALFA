@@ -2,8 +2,7 @@
 
 By Evgenii Razinkov, Iuliia Saveleva, Jiří Matas
 
-The paper "ALFA: Agglomerative Late Fusion Algorithm for Object Detection" is accepted 
-to ICPR 2018, the link will be added here as soon as the paper becomes available.
+This is the original implementation of "ALFA: Agglomerative Late Fusion Algorithm for Object Detection" https://arxiv.org/pdf/1907.06067.pdf.
 
 ![](paper_image/ALFA_result.png "ALFA result")
 
